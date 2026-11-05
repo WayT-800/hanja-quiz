@@ -920,11 +920,24 @@ async function rpc(name,args){
   const body=await response.text();
   return body?JSON.parse(body):null;
 }
+function monthTitle(){
+  return new Intl.DateTimeFormat("ko-KR",{month:"long",timeZone:"Asia/Seoul"}).format(new Date())+" 순위";
+}
+function updateMonth(){
+  const title=monthTitle();
+  const button=document.getElementById("viewBoard");
+  if(button.textContent===title+" 보기")return;
+  button.textContent=title+" 보기";
+  for(const el of document.querySelectorAll(".rank-list"))el.textContent=title+" · 새 순위표를 열어 주세요.";
+}
+updateMonth();
+setInterval(updateMonth,1000);
+document.addEventListener("visibilitychange",updateMonth);
 function displayBoard(el,rows,nick){
   el.className="rank-list";
-  el.textContent=rows.length ? ["닉네임별 최고 기록",...rows.map(r=>
+  el.textContent=rows.length ? [monthTitle(),...rows.map(r=>
     r.place+"위 · "+r.nickname+(r.nickname===nick?" (내 기록)":"")+" · "+r.correct+"/30 · "+(r.tenths/10).toFixed(1)+"초"
-  )].join("\n") : "아직 등록된 기록이 없어요.";
+  )].join("\n") : monthTitle()+" · 아직 등록된 기록이 없어요.";
 }
 async function resultRanking(run){
   const el=document.getElementById("resultBoard");
