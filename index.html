@@ -283,6 +283,25 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
 #backToModes{background:transparent;color:var(--muted);border:0;padding:10px 0;margin-bottom:8px;cursor:pointer}
 #intro .panel:has(.mode-picker:not(.hidden)){width:min(660px,96vw);padding-block:36px}
 .challenge-box h2{margin-top:0}
+#intro .panel:has(#practiceSetup:not(.hidden)){width:min(800px,96vw)}
+#practiceSetup .setting-grid{
+  grid-template-columns:repeat(2,minmax(0,1fr));gap:18px 26px;
+  border-block:1px solid var(--line);padding:18px 0;
+}
+#practiceSetup .setting-row{display:block;border:0;padding:0;background:none}
+#practiceSetup .setting-row:first-child{grid-column:1/-1}
+#practiceSetup .setting-title{margin-bottom:7px;font-size:15px;font-weight:700}
+#practiceSetup .setting-title small{margin-left:5px;color:var(--muted);font-size:12px;font-weight:400}
+#practiceSetup .seg{display:grid;grid-auto-columns:minmax(0,1fr);grid-auto-flow:column;gap:4px}
+#practiceSetup .seg button{
+  min-width:0;min-height:44px;padding:6px 2px;border-radius:8px;
+  border-color:var(--line);background:#18264a;font-size:15px;font-weight:700;
+}
+#practiceSetup .seg button.active{background:#344c82;color:white;border-color:#85c6ff;box-shadow:none}
+#practiceSetup .sound-row{border:0;background:none;padding:0;margin:16px 0}
+#practiceSetup #errorText:empty{display:none}
+#practiceSetup #startBtn{min-width:0;width:100%;min-height:52px;font-size:21px;border-radius:12px;box-shadow:none}
+@media(max-width:600px){#practiceSetup .setting-grid{grid-template-columns:1fr;gap:14px}}
 </style>
 </head>
 <body>
@@ -317,7 +336,7 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
       <div id="practiceSetup" class="hidden">
       <div class="setting-grid">
         <div class="setting-row">
-          <div class="setting-title">출제 범위</div>
+          <div class="setting-title">출제 범위 <small>복수 선택</small></div>
           <div>
             <div id="partSelector" class="seg">
               <button type="button" class="part-btn active" data-part="all">전체</button>
@@ -327,7 +346,6 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
               <button type="button" class="part-btn active" data-part="4">4부</button>
               <button type="button" class="part-btn active" data-part="5">5부</button>
             </div>
-            <div class="range-help">전체를 누르면 1~5부가 모두 선택됩니다. 개별 부를 끄면 전체 선택도 자동으로 꺼집니다.</div>
           </div>
         </div>
 
@@ -354,7 +372,6 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
           <div class="setting-title">제한시간</div>
           <div class="seg" data-setting="time">
             <button type="button" data-value="0">없음</button>
-            <button type="button" data-value="5">5초</button>
             <button type="button" class="active" data-value="10">10초</button>
             <button type="button" data-value="15">15초</button>
             <button type="button" data-value="20">20초</button>
@@ -368,7 +385,6 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
             <button type="button" class="active" data-value="10">10</button>
             <button type="button" data-value="20">20</button>
             <button type="button" data-value="30">30</button>
-            <button type="button" data-value="all">전체</button>
           </div>
         </div>
       </div>
@@ -378,7 +394,6 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
           <input id="soundEnabled" type="checkbox" checked>
           <span>효과음 · 배경음악</span>
         </label>
-        <small>게임 시작을 눌러야 소리가 시작됩니다.</small>
       </div>
 
       <div id="errorText"></div>
