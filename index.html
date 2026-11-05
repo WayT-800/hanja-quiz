@@ -302,9 +302,34 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
 #practiceSetup #errorText:empty{display:none}
 #practiceSetup #startBtn{min-width:0;width:100%;min-height:52px;font-size:21px;border-radius:12px;box-shadow:none}
 @media(max-width:600px){#practiceSetup .setting-grid{grid-template-columns:1fr;gap:14px}}
+#rankingDialog{width:min(560px,94vw);max-height:90dvh;padding:24px;color:var(--text);background:linear-gradient(150deg,#192b51,#0c1730);border:1px solid #425579;border-radius:24px;box-shadow:0 24px 90px #0009;overflow:auto}
+#rankingDialog::backdrop{background:#030a19c9;backdrop-filter:blur(5px)}
+.ranking-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px}
+.ranking-header p{margin:0 0 5px;color:#a7bbdf;font-size:12px}.ranking-header h2{margin:0;font-size:30px}
+#closeRanking{background:#ffffff10;border:1px solid var(--line);color:white;border-radius:50%;width:40px;height:40px;cursor:pointer}
+.ranking-columns,.ranking-row{display:grid;grid-template-columns:48px 1fr 70px 85px;align-items:center;gap:8px}
+.ranking-columns{font-size:12px;color:#a7bbdf;padding:0 12px 8px}
+.ranking-row{padding:11px 12px;margin:5px 0;border:1px solid #ffffff0c;border-radius:11px;background:#ffffff05;font-variant-numeric:tabular-nums}
+.ranking-row span:nth-child(n+3),.ranking-columns span:nth-child(n+3){text-align:right}
+.ranking-row[data-place="1"]{background:#ffd84d15;border-color:#ffd84d60}
+.ranking-row[data-place="1"] span:first-child{color:#ffd84d;font-weight:900}
+.ranking-row[data-place="2"] span:first-child{color:#cfddf2;font-weight:900}
+.ranking-row[data-place="3"] span:first-child{color:#ffb480;font-weight:900}
+.ranking-mine{position:sticky;bottom:-24px;background:#102344;padding:15px 0 10px;margin-top:18px;border-top:1px solid #5484a8}
+.ranking-mine h3{font-size:14px;color:#71ddff;margin:0 0 8px}
+.ranking-mine .ranking-row{border-color:#42d9ff66;background:#42d9ff10}
+#rankingStatus,#rankingMine{font-size:14px;color:#c6d5eb}
+@media(max-width:420px){#rankingDialog{padding:16px}.ranking-columns,.ranking-row{grid-template-columns:35px 1fr 57px 67px;gap:4px;font-size:13px}}
 </style>
 </head>
 <body>
+<dialog id="rankingDialog" aria-labelledby="rankingTitle">
+  <header class="ranking-header"><div><p>한자 퀴즈 · 도전모드</p><h2 id="rankingTitle"></h2></div><button id="closeRanking" type="button" aria-label="순위표 닫기">✕</button></header>
+  <div id="rankingStatus" role="status"></div>
+  <div class="ranking-columns"><span>순위</span><span>닉네임</span><span>정답</span><span>시간</span></div>
+  <div id="rankingTop"></div>
+  <footer class="ranking-mine"><h3>내 기록</h3><div id="rankingMine"></div></footer>
+</dialog>
 <div class="screen">
   <div id="confettiLayer" class="hidden"></div>
 
@@ -993,10 +1018,43 @@ async function resultRanking(run){
   }
 }
 retryRank.onclick=()=>resultRanking(state);
+const rankingDialog=document.getElementById("rankingDialog");
+document.getElementById("closeRanking").onclick=()=>rankingDialog.close();
+function rankingRow(record){
+  const row=document.createElement("div");
+  row.className="ranking-row";
+  row.dataset.place=record.place;
+  for(const text of [record.place+"위",record.nickname,record.correct+"/30",(record.tenths/10).toFixed(1)+"초"]){
+    const cell=document.createElement("span");
+    cell.textContent=text;
+    row.appendChild(cell);
+  }
+  return row;
+}
+let rankingRequest=0;
 document.getElementById("viewBoard").onclick=async()=>{
-  const el=document.getElementById("homeBoard");
-  try{displayBoard(el,await rpc("hanja_board",{}),"")}
-  catch(error){el.textContent=error.message}
+  const request=++rankingRequest;
+  const input=document.getElementById("nickname").value;
+  const nickname=/^[0-9]{4}$/.test(input)?input:null;
+  const top=document.getElementById("rankingTop");
+  const mine=document.getElementById("rankingMine");
+  const status=document.getElementById("rankingStatus");
+  document.getElementById("rankingTitle").textContent=monthTitle();
+  top.replaceChildren();
+  mine.textContent="";
+  status.textContent="순위를 불러오는 중…";
+  rankingDialog.showModal();
+  try{
+    const rows=await rpc("hanja_board",{p_nickname:nickname});
+    if(request!==rankingRequest)return;
+    status.textContent=rows.length?"":"이번 달 첫 기록에 도전해 보세요.";
+    rows.filter(row=>Number(row.place)<=10).slice(0,10).forEach(row=>top.appendChild(rankingRow(row)));
+    const personal=rows.find(row=>row.nickname===nickname);
+    if(personal)mine.appendChild(rankingRow(personal));
+    else mine.textContent=nickname?nickname+" · 이번 달 기록이 없어요.":"도전 화면에서 숫자 4자리 닉네임을 입력하면 내 기록도 볼 수 있어요.";
+  }catch(error){
+    if(request===rankingRequest)status.textContent=error.message;
+  }
 };
 function renderPodium(){
   const rows=state.scores.map((score,i)=>({player:i+1,score,correct:state.correct[i]}))
