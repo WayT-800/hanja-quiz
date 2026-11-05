@@ -277,25 +277,12 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
 .challenge-box input{font:inherit;width:6em;padding:8px;border-radius:8px}
 .challenge-box button,#retryRank{font:inherit;padding:8px 14px;margin:6px;border-radius:10px;cursor:pointer}
 .rank-list{line-height:1.7;font-variant-numeric:tabular-nums;white-space:pre-line}
-#intro{background:#f4f2eb;color:#213e35}
-#intro .panel{width:min(740px,100%);max-height:100%;padding:clamp(18px,4vw,42px);background:transparent;border:0;border-radius:0;box-shadow:none}
-#intro .brand{justify-content:flex-start;margin-bottom:24px;gap:12px}
-#intro .logo{width:47px;height:47px;border:0;border-radius:10px;background:#a34736;color:#fff;font:34px Georgia,serif}
-#intro h1{font-size:clamp(32px,5vw,46px);letter-spacing:-.06em}
-.mode-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
-.mode-card{display:flex;flex-direction:column;align-items:stretch;padding:24px;background:#fffefa;border:1px solid #d9dcd1;border-radius:16px}
-.mode-card h2{font-size:24px;margin:0}.mode-card p{color:#58675d;margin:7px 0 20px}
-#challengeForm{display:grid;gap:12px;margin-top:auto}#challengeForm label{font-size:14px;color:#42584b}
-#nickname{display:block;width:100%;margin-top:5px;border:1px solid #abb8ae;border-radius:7px;padding:8px 12px;font-size:17px;background:white;color:#213e35}
-#intro #startBtn,#challengeForm button{min-width:0;width:100%;min-height:46px;border:0;border-radius:8px;background:#235243;color:white;box-shadow:none;font-size:17px;font-weight:700;cursor:pointer}
-#intro #startBtn{margin-top:auto}#challengeForm button{background:#e6ece5;color:#244937}
-.options{margin:16px 0;border-block:1px solid #cbd2c7;padding:14px 0}.options summary{cursor:pointer;font-weight:700}.options[open] summary{margin-bottom:14px}
-#intro .setting-row,#intro .sound-row{border:0;padding:5px 0;background:transparent}#intro .setting-title{font-size:15px}
-#intro .seg button{background:white;color:#334b40;border:1px solid #b8c6bb;box-shadow:none;min-width:45px;min-height:40px;font-size:15px}
-#intro .seg button.active{background:#315d4b;color:white}
-#intro #viewBoard{background:transparent;border:0;color:#265440;font-weight:700;padding:7px 0;cursor:pointer}
-#intro #errorText{height:auto;color:#97372d}#intro #homeBoard{font-size:15px}
-@media(max-width:580px){.mode-grid{grid-template-columns:1fr}.mode-card{padding:16px}.mode-card p{margin-bottom:12px}#intro .panel{padding:12px 4px}#intro .brand{margin-bottom:16px}}
+.mode-picker{display:flex;justify-content:center;gap:16px;flex-wrap:wrap}
+.mode-picker button{min-width:min(240px,100%);padding:20px;border:1px solid var(--line);border-radius:17px;background:#253768;color:var(--text);font-size:22px;font-weight:800;cursor:pointer}
+.mode-picker button:last-child{background:linear-gradient(135deg,var(--yellow),var(--orange));color:#201b18}
+#backToModes{background:transparent;color:var(--muted);border:0;padding:10px 0;margin-bottom:8px;cursor:pointer}
+#intro .panel:has(.mode-picker:not(.hidden)){width:min(660px,96vw);padding-block:36px}
+.challenge-box h2{margin-top:0}
 </style>
 </head>
 <body>
@@ -308,25 +295,26 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
         <div class="logo">漢</div>
         <div>
           <h1>한자 퀴즈</h1>
+
         </div>
       </div>
 
-      <div class="mode-grid"><section class="mode-card">
-        <h2>일반 퀴즈</h2>
-        <p id="practiceSummary"></p>
-        <button id="startBtn" type="button">퀴즈 시작</button>
-      </section>      <section class="mode-card">
-        <h2>도전 모드</h2>
-        <p>전체 범위 · 30문제</p>
+      <div id="modePicker" class="mode-picker">
+        <button type="button" data-screen="practice">일반모드</button>
+        <button type="button" data-screen="challenge">도전모드(1인)</button>
+      </div>
+      <button id="backToModes" class="hidden" type="button">← 모드 선택</button>
+      <section id="challengeSetup" class="challenge-box hidden">
+        <h2>도전모드(1인) · 30문제</h2>
+        <p>각 부에서 6문제씩 풀어요. 정답 수가 같으면 풀이 시간이 짧은 기록이 앞서요.</p>
         <form id="challengeForm">
           <label>숫자 4자리 닉네임 <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
           <button type="submit">도전 시작</button>
         </form>
-        
-        
+        <button id="viewBoard" type="button">순위표 보기</button>
+        <div id="homeBoard" aria-live="polite"></div>
       </section>
-</div>
-      <details class="options"><summary>일반 퀴즈 설정</summary>
+      <div id="practiceSetup" class="hidden">
       <div class="setting-grid">
         <div class="setting-row">
           <div class="setting-title">출제 범위</div>
@@ -339,6 +327,7 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
               <button type="button" class="part-btn active" data-part="4">4부</button>
               <button type="button" class="part-btn active" data-part="5">5부</button>
             </div>
+            <div class="range-help">전체를 누르면 1~5부가 모두 선택됩니다. 개별 부를 끄면 전체 선택도 자동으로 꺼집니다.</div>
           </div>
         </div>
 
@@ -389,12 +378,12 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
           <input id="soundEnabled" type="checkbox" checked>
           <span>효과음 · 배경음악</span>
         </label>
+        <small>게임 시작을 눌러야 소리가 시작됩니다.</small>
       </div>
 
-</details>
-      <div id="errorText" role="alert"></div>
-      <button id="viewBoard" type="button">순위표 보기</button>
-      <div id="homeBoard" aria-live="polite"></div>
+      <div id="errorText"></div>
+      <div class="start-wrap"><button id="startBtn" type="button">게임 시작</button></div>
+      </div>
     </div>
   </section>
 
@@ -676,10 +665,23 @@ async function startGame(nickname=""){
   } finally {starting=false}
 }
 
+const picker=document.getElementById("modePicker");
+const back=document.getElementById("backToModes");
+function selectScreen(screen){
+  picker.classList.toggle("hidden",Boolean(screen));
+  back.classList.toggle("hidden",!screen);
+  document.getElementById("challengeSetup").classList.toggle("hidden",screen!=="challenge");
+  document.getElementById("practiceSetup").classList.toggle("hidden",screen!=="practice");
+  const focusTarget=screen==="challenge"?document.getElementById("nickname"):screen?back:picker.querySelector("button");
+  focusTarget.focus();
+}
+picker.querySelectorAll("button").forEach(button=>button.onclick=()=>selectScreen(button.dataset.screen));
+back.onclick=()=>selectScreen("");
 function goHome(){
   settings=normalSettings;
   stopTimer();clearConfetti();Sound.stopBgm();
   game.classList.add("hidden");result.classList.add("hidden");intro.classList.remove("hidden");
+  selectScreen("");
 }
 
 function buildOptions(item,type){
@@ -944,12 +946,6 @@ async function rpc(name,args){
   const body=await response.text();
   return body?JSON.parse(body):null;
 }
-function updatePracticeSummary(){
-  const count=normalSettings.count;
-  document.getElementById("practiceSummary").textContent=normalSettings.players+"인용 · "+(count==="all"?"전체 문제":count+"문제");
-}
-updatePracticeSummary();
-intro.addEventListener("click",updatePracticeSummary);
 function monthTitle(){
   return new Intl.DateTimeFormat("ko-KR",{month:"long",timeZone:"Asia/Seoul"}).format(new Date())+" 순위";
 }
