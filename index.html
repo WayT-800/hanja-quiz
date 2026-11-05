@@ -2,289 +2,275 @@
 <html lang="ko">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<title>한자 퀴즈 1인용</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
+<title>한자 퀴즈 통합판</title>
 <style>
 :root{
-  --bg1:#081126;
-  --bg2:#142249;
-  --card:#17264f;
-  --card2:#213362;
-  --text:#f8faff;
-  --muted:#b8c3e5;
-  --line:rgba(255,255,255,.16);
-  --cyan:#42d9ff;
-  --green:#48df9c;
-  --yellow:#ffd84d;
-  --orange:#ff9d45;
-  --red:#ff6677;
-  --purple:#917cff;
+  --bg1:#071126; --bg2:#14234a; --text:#f8faff; --muted:#b8c3e4;
+  --line:rgba(255,255,255,.16); --cyan:#42d9ff; --green:#48df9c;
+  --yellow:#ffd84d; --orange:#ff9d45; --red:#ff6677; --purple:#927cff;
 }
 *{box-sizing:border-box}
 html,body{
-  margin:0;width:100%;height:100%;
-  background:
-    radial-gradient(circle at 50% 115%,rgba(89,111,255,.22),transparent 42%),
-    linear-gradient(180deg,var(--bg1),var(--bg2));
+  margin:0;width:100%;height:100%;overflow:hidden;
+  background:radial-gradient(circle at 50% 115%,rgba(89,111,255,.22),transparent 42%),
+             linear-gradient(180deg,var(--bg1),var(--bg2));
   color:var(--text);
   font-family:"Malgun Gothic","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
-  overflow:hidden;
-  touch-action:manipulation;
-  user-select:none;
+  user-select:none;touch-action:manipulation;
 }
-button,input{font:inherit}
-button{-webkit-tap-highlight-color:transparent}
+button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
 .hidden{display:none!important}
-.screen{
-  width:100vw;height:100vh;min-height:520px;position:relative;overflow:hidden;
-}
+.screen{width:100vw;height:100vh;position:relative;overflow:hidden}
 .screen:before{
   content:"";position:absolute;inset:0;pointer-events:none;opacity:.12;
-  background-image:
-    linear-gradient(30deg,transparent 24%,rgba(255,255,255,.11) 25%,transparent 26%),
-    linear-gradient(150deg,transparent 24%,rgba(255,255,255,.08) 25%,transparent 26%);
+  background-image:linear-gradient(30deg,transparent 24%,rgba(255,255,255,.11) 25%,transparent 26%),
+                   linear-gradient(150deg,transparent 24%,rgba(255,255,255,.08) 25%,transparent 26%);
   background-size:60px 60px;
 }
 
-/* INTRO */
+/* Intro */
 #intro,#result{
   position:relative;z-index:1;height:100%;
-  display:flex;align-items:center;justify-content:center;padding:20px;
+  display:flex;align-items:center;justify-content:center;padding:18px;
 }
 .panel{
-  width:min(860px,96vw);
-  max-height:94vh;
-  overflow:auto;
-  border:1px solid var(--line);
-  border-radius:30px;
-  background:rgba(10,17,42,.92);
-  padding:28px;
-  box-shadow:0 22px 65px rgba(0,0,0,.34);
+  width:min(980px,96vw);max-height:95vh;overflow:auto;
+  border:1px solid var(--line);border-radius:30px;background:rgba(10,17,42,.93);
+  padding:26px 30px;box-shadow:0 22px 65px rgba(0,0,0,.34);
 }
-.brand{
-  display:flex;justify-content:center;align-items:center;gap:16px;margin-bottom:24px;
-}
+.brand{display:flex;align-items:center;justify-content:center;gap:15px;margin-bottom:20px}
 .logo{
-  width:72px;height:72px;border-radius:22px;display:grid;place-items:center;
-  font-size:40px;font-weight:1000;
-  background:linear-gradient(135deg,#6874ff,#29c8ff);
+  width:68px;height:68px;border-radius:21px;display:grid;place-items:center;
+  font-size:38px;font-weight:1000;background:linear-gradient(135deg,#6874ff,#29c8ff);
   border:2px solid rgba(255,255,255,.24);
 }
-.brand h1{margin:0;font-size:clamp(34px,6vw,58px);letter-spacing:-2px}
+.brand h1{margin:0;font-size:clamp(32px,5vw,54px);letter-spacing:-2px}
 .brand p{margin:3px 0 0;color:var(--muted);font-weight:800}
-.setting-grid{display:grid;gap:14px}
+.setting-grid{display:grid;gap:12px}
 .setting-row{
-  display:grid;grid-template-columns:130px 1fr;gap:14px;align-items:center;
-  border:1px solid var(--line);border-radius:18px;padding:13px 15px;
+  display:grid;grid-template-columns:140px 1fr;gap:14px;align-items:center;
+  padding:12px 14px;border:1px solid var(--line);border-radius:17px;
   background:rgba(255,255,255,.035);
 }
-.setting-title{font-size:19px;font-weight:1000}
-.seg{display:flex;gap:9px;flex-wrap:wrap}
-.seg button{
-  min-width:92px;min-height:52px;padding:8px 14px;border-radius:14px;
-  border:1px solid rgba(255,255,255,.17);background:#1d2b56;color:white;
-  font-size:17px;font-weight:1000;cursor:pointer;
+.setting-title{font-size:18px;font-weight:1000}
+.seg{display:flex;gap:8px;flex-wrap:wrap}
+.seg button,.part-btn{
+  min-width:84px;min-height:49px;padding:8px 13px;border-radius:13px;
+  border:1px solid rgba(255,255,255,.18);background:#1d2b56;color:white;
+  font-size:16px;font-weight:1000;cursor:pointer;
 }
-.seg button.active{
+.seg button.active,.part-btn.active{
   background:linear-gradient(135deg,#5968ff,#29c0ff);
-  border-color:#99eaff;
-  box-shadow:0 0 0 3px rgba(67,215,255,.12) inset;
+  border-color:#99eaff;box-shadow:0 0 0 3px rgba(67,215,255,.12) inset;
 }
+.part-btn[data-part="all"]{min-width:94px}
+.range-help{margin-top:7px;color:var(--muted);font-size:12px;font-weight:700}
 .sound-row{
-  margin-top:15px;padding:12px 15px;border:1px dashed var(--line);border-radius:16px;
-  display:flex;justify-content:space-between;align-items:center;gap:12px;
+  margin-top:13px;padding:11px 14px;border:1px dashed var(--line);border-radius:15px;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
   background:rgba(255,255,255,.025);
 }
 .toggle{display:flex;align-items:center;gap:9px;font-weight:900}
-.toggle input{width:22px;height:22px}
+.toggle input{width:21px;height:21px}
 .sound-row small{color:var(--muted);font-weight:700}
-.start-wrap{display:flex;justify-content:center;margin-top:20px}
+.start-wrap{display:flex;justify-content:center;margin-top:18px}
 #startBtn{
-  min-width:300px;min-height:68px;border:0;border-radius:20px;cursor:pointer;
-  background:linear-gradient(135deg,var(--yellow),var(--orange));
-  color:#141414;font-size:27px;font-weight:1000;
-  box-shadow:0 9px 0 #b7661e,0 16px 28px rgba(0,0,0,.26);
+  min-width:300px;min-height:66px;border:0;border-radius:19px;cursor:pointer;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));color:#141414;
+  font-size:27px;font-weight:1000;box-shadow:0 9px 0 #b7661e,0 16px 28px rgba(0,0,0,.26);
 }
 #startBtn:active{transform:translateY(3px);box-shadow:0 6px 0 #b7661e}
+#errorText{height:18px;margin-top:9px;text-align:center;color:#ffb0ba;font-size:13px;font-weight:900}
 
-/* GAME */
-#game{position:relative;z-index:1;height:100%;padding:14px}
-.game-shell{
-  width:min(1100px,100%);
-  height:100%;
-  margin:0 auto;
-  display:grid;
-  grid-template-rows:auto minmax(0,1fr);
-  gap:10px;
+/* Game frame: bottom 4% is intentionally left blank for tablet soft buttons */
+#game{position:relative;z-index:1;height:100%}
+.game-active{
+  height:96%;
+  position:relative;
 }
-.topbar{
-  display:grid;
-  grid-template-columns:1fr auto 1fr;
-  align-items:center;
-  gap:10px;
-  min-height:50px;
+.soft-reserve{
+  height:4%;
+  min-height:18px;
+  pointer-events:none;
+  background:transparent;
 }
-.top-left,.top-right{display:flex;align-items:center;gap:9px}
-.top-right{justify-content:flex-end}
+
+/* Common game controls */
+.game-topbar{
+  position:absolute;top:10px;left:12px;right:12px;z-index:10;
+  display:flex;justify-content:space-between;align-items:center;pointer-events:none;
+}
+.game-topbar>*{pointer-events:auto}
 .pill{
-  min-height:40px;display:flex;align-items:center;
-  padding:7px 13px;border:1px solid var(--line);border-radius:999px;
-  background:rgba(9,15,35,.7);font-weight:1000;color:#edf2ff;
+  min-height:38px;display:flex;align-items:center;padding:6px 12px;
+  border:1px solid var(--line);border-radius:999px;background:rgba(8,14,34,.68);
+  color:#edf2ff;font-size:15px;font-weight:1000;
 }
-#roundIndicator{font-size:18px}
-.score{font-size:17px}
 #soundChip{
-  border:1px solid var(--line);border-radius:999px;background:rgba(9,15,35,.7);
-  color:white;min-height:40px;padding:7px 13px;font-weight:900;cursor:pointer;
+  min-height:38px;padding:6px 12px;border:1px solid var(--line);border-radius:999px;
+  background:rgba(8,14,34,.68);color:#fff;font-size:14px;font-weight:900;cursor:pointer;
 }
-.quiz-card{
-  min-height:0;
-  display:grid;
-  grid-template-rows:minmax(130px,38%) minmax(0,1fr) auto;
-  gap:12px;
-  border:1px solid var(--line);
-  border-radius:28px;
-  background:rgba(15,24,54,.88);
-  padding:18px;
-  box-shadow:0 18px 50px rgba(0,0,0,.23);
+
+/* Single player tablet mode */
+.single-layout{
+  height:100%;padding:58px 14px 10px;
 }
-.question-area{
-  min-height:0;
+.single-card{
+  width:min(1060px,100%);height:100%;margin:0 auto;
+  display:grid;grid-template-rows:minmax(125px,36%) minmax(0,1fr) auto;gap:11px;
+  padding:16px;border:1px solid var(--line);border-radius:27px;background:rgba(15,24,54,.89);
+}
+.single-question{
   display:flex;align-items:center;justify-content:center;text-align:center;
-  border-radius:22px;
+  border-radius:21px;border:1px solid rgba(255,255,255,.11);
   background:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.018));
-  border:1px solid rgba(255,255,255,.11);
-  padding:16px;
+  padding:12px;min-height:0;
 }
-.question.hanja{
-  font-size:clamp(82px,15vw,160px);font-weight:1000;line-height:1;
-  text-shadow:0 5px 0 rgba(0,0,0,.25);
+.single-question .hanja{font-size:clamp(82px,15vw,158px);font-weight:1000;line-height:1}
+.single-question .reading{font-size:clamp(32px,6vw,68px);font-weight:1000;line-height:1.14;letter-spacing:-2px}
+.single-answers{
+  min-height:0;display:grid;grid-template-columns:1fr 1fr;grid-template-rows:1fr 1fr;gap:11px;
 }
-.question.reading{
-  font-size:clamp(34px,6vw,70px);font-weight:1000;line-height:1.14;letter-spacing:-2px;
+.single-answer{
+  min-width:0;min-height:78px;touch-action:none;-ms-touch-action:none;
+  border:2px solid rgba(255,255,255,.18);border-radius:19px;
+  background:linear-gradient(180deg,#263867,#18264f);color:white;
+  padding:9px 12px;font-size:clamp(23px,4vw,40px);font-weight:1000;
+  line-height:1.12;white-space:normal;cursor:pointer;box-shadow:0 6px 0 rgba(0,0,0,.18);
 }
-.answers{
-  min-height:0;
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  grid-template-rows:1fr 1fr;
-  gap:12px;
+.single-answer.hanja-choice{font-size:clamp(46px,8vw,82px)}
+.single-answer:active{transform:translateY(2px)}
+.single-answers.locked .single-answer{pointer-events:none}
+.single-answer.correct-answer,.multi-answer.correct-answer{
+  background:linear-gradient(180deg,#43e0a2,#149269);border-color:#b7ffe5;color:#061d16;
 }
-.answer{
-  min-width:0;min-height:82px;
-  touch-action:none;-ms-touch-action:none;
-  border:2px solid rgba(255,255,255,.18);
-  border-radius:20px;
-  background:linear-gradient(180deg,#263867,#18264f);
-  color:white;
-  padding:10px 12px;
-  font-size:clamp(24px,4vw,42px);
-  font-weight:1000;
-  line-height:1.12;
-  white-space:normal;
-  cursor:pointer;
-  box-shadow:0 6px 0 rgba(0,0,0,.18);
+.single-answer.chosen-wrong,.multi-answer.chosen-wrong{
+  background:linear-gradient(180deg,#ff7180,#b93249);border-color:#ffc6cd;color:white;
 }
-.answer.hanja-choice{font-size:clamp(48px,8vw,86px)}
-.answer:active{transform:translateY(2px);box-shadow:0 4px 0 rgba(0,0,0,.18)}
-.answers.locked .answer{pointer-events:none}
-.answer.correct-answer{
-  background:linear-gradient(180deg,#43e0a2,#149269);
-  border-color:#b7ffe5;color:#061d16;
+.single-answer.chosen-correct,.multi-answer.chosen-correct{outline:4px solid white;outline-offset:-5px}
+
+/* Multi player electronic-board mode */
+.multi-layout{height:100%;display:grid;grid-template-rows:38% 62%}
+.multi-top-space{position:relative}
+.multi-round{
+  position:absolute;top:12px;left:50%;transform:translateX(-50%);
 }
-.answer.chosen-wrong{
-  background:linear-gradient(180deg,#ff7180,#b93249);
-  border-color:#ffc6cd;color:white;
+.multi-players{
+  min-height:0;display:grid;border-top:2px solid rgba(255,255,255,.16);
 }
-.answer.chosen-correct{
-  outline:5px solid white;outline-offset:-6px;
+.player{
+  min-width:0;position:relative;display:flex;flex-direction:column;
+  border-right:2px solid rgba(255,255,255,.14);
+  background:linear-gradient(180deg,rgba(255,255,255,.025),rgba(255,255,255,.045));
+  overflow:hidden;
 }
-.timebar-shell{
-  height:16px;background:rgba(0,0,0,.33);
-  border:1px solid rgba(255,255,255,.12);
-  border-radius:999px;overflow:hidden;
+.player:last-child{border-right:0}
+.player-head{
+  height:43px;display:flex;justify-content:space-between;align-items:center;
+  padding:0 10px;background:rgba(0,0,0,.18);border-bottom:1px solid var(--line);font-weight:1000;
 }
-.timebar{
-  width:100%;height:100%;
-  background:linear-gradient(90deg,var(--cyan),var(--purple));
-  transition:width .08s linear,background .12s;
+.player-name{font-size:17px}.player-score{font-size:13px;color:#d5defd}
+.player-question-wrap{
+  height:30%;display:flex;align-items:flex-end;justify-content:center;text-align:center;padding:4px 8px 8px;
 }
+.player-question.hanja{font-size:clamp(52px,6.5vw,94px);font-weight:1000;line-height:1}
+.player-question.reading{font-size:clamp(21px,2.4vw,38px);font-weight:1000;line-height:1.1;letter-spacing:-1px}
+.player-answer-wrap{flex:1;min-height:0;display:flex;flex-direction:column;padding:0 7px 7px}
+.multi-answers{
+  flex:1;min-height:0;display:grid;grid-template-rows:repeat(4,minmax(0,1fr));gap:6px;
+  transition:filter .15s,opacity .15s;
+}
+.multi-answer{
+  width:100%;min-height:0;touch-action:none;-ms-touch-action:none;
+  border:2px solid rgba(255,255,255,.18);border-radius:11px;
+  background:linear-gradient(180deg,#253363,#18244b);color:#fff;
+  padding:4px 5px;font-size:clamp(15px,1.55vw,26px);font-weight:1000;
+  line-height:1.08;white-space:normal;cursor:pointer;
+}
+.multi-answer.hanja-choice{font-size:clamp(28px,3vw,48px)}
+.player.locked .multi-answers{filter:grayscale(.84) brightness(.62);opacity:.67}
+.player.locked .multi-answer,.player.reveal .multi-answer{pointer-events:none}
+.player.reveal .multi-answers{filter:none;opacity:1}
+
+/* Timers */
+.time-shell{
+  height:11px;margin-top:7px;border-radius:999px;overflow:hidden;
+  border:1px solid rgba(255,255,255,.11);background:rgba(0,0,0,.33);
+}
+.single-card .time-shell{height:15px}
+.timebar{height:100%;width:100%;background:linear-gradient(90deg,var(--cyan),var(--purple));transition:width .07s linear}
 .timebar.urgent{background:linear-gradient(90deg,var(--red),var(--yellow))}
+.player:nth-child(2) .timebar{background:linear-gradient(90deg,#4fe19d,#46c8aa)}
+.player:nth-child(3) .timebar{background:linear-gradient(90deg,#ffd84d,#ff9d45)}
+.player:nth-child(4) .timebar{background:linear-gradient(90deg,#ff6677,#ff8d4d)}
+
 .feedback{
-  position:absolute;left:50%;top:49%;
-  transform:translate(-50%,-50%) scale(.9);
-  min-width:170px;padding:13px 22px;border-radius:999px;
-  background:rgba(7,13,31,.92);
-  border:2px solid rgba(255,255,255,.24);
-  text-align:center;font-size:24px;font-weight:1000;
-  opacity:0;pointer-events:none;
-  transition:.16s;
-  z-index:5;
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) scale(.9);
+  min-width:150px;padding:11px 18px;border-radius:999px;background:rgba(7,13,31,.93);
+  border:2px solid rgba(255,255,255,.24);text-align:center;font-size:21px;font-weight:1000;
+  opacity:0;pointer-events:none;transition:.15s;z-index:20;
 }
 .feedback.show{opacity:1;transform:translate(-50%,-50%) scale(1)}
-.feedback.ok{border-color:var(--green)}
-.feedback.no{border-color:var(--red)}
-.feedback.timeout{border-color:var(--yellow)}
+.feedback.ok{border-color:var(--green)}.feedback.no{border-color:var(--red)}.feedback.timeout{border-color:var(--yellow)}
 
-/* RESULT */
+/* Results */
 .result-card{text-align:center}
-.result-card h2{
-  margin:0;font-size:clamp(42px,7vw,70px);letter-spacing:-2px;
+.result-card h2{margin:0;font-size:clamp(40px,6vw,68px);letter-spacing:-2px}
+.result-sub{margin:7px 0 20px;color:#e3e9ff;font-size:19px;font-weight:900}
+.single-result-box{
+  width:min(430px,90%);margin:0 auto 18px;padding:20px;
+  border:1px solid var(--line);border-radius:25px;background:linear-gradient(180deg,#1c2c5a,#152348);
 }
-.result-sub{margin:7px 0 22px;color:#e3e9ff;font-size:20px;font-weight:900}
-.result-score{
-  width:min(440px,90%);margin:0 auto 18px;
-  border:1px solid var(--line);border-radius:26px;padding:22px;
-  background:linear-gradient(180deg,#1c2c5a,#152348);
-}
-.big-score{font-size:clamp(54px,10vw,96px);font-weight:1000;line-height:1}
-.result-detail{margin-top:12px;font-size:22px;font-weight:900;color:#eef2ff}
+.big-score{font-size:clamp(52px,9vw,90px);font-weight:1000;line-height:1}
+.result-detail{margin-top:11px;font-size:21px;font-weight:900}
 .grade{
-  display:inline-block;margin-top:16px;padding:9px 18px;border-radius:999px;
-  background:linear-gradient(135deg,var(--yellow),var(--orange));
-  color:#171717;font-size:21px;font-weight:1000;
+  display:inline-block;margin-top:15px;padding:8px 16px;border-radius:999px;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));color:#171717;font-size:20px;font-weight:1000;
 }
-.result-actions{display:flex;justify-content:center;gap:12px;flex-wrap:wrap;margin-top:22px}
+.podium{
+  min-height:360px;display:flex;align-items:flex-end;justify-content:center;gap:15px;margin:14px auto 8px;
+}
+.winner{width:min(25vw,210px);display:flex;flex-direction:column;align-items:center}
+.medal{
+  width:78px;height:78px;border-radius:50%;display:grid;place-items:center;
+  border:4px solid rgba(255,255,255,.35);font-size:31px;font-weight:1000;margin-bottom:7px;
+}
+.gold{background:linear-gradient(#ffe483,#f5ba31);color:#654000}
+.silver{background:linear-gradient(#f1f5fb,#b9c7dd);color:#425167}
+.bronze{background:linear-gradient(#efbf97,#b97841);color:#582e12}
+.winner-info{
+  width:100%;padding:11px 6px;border:1px solid var(--line);border-radius:18px 18px 0 0;
+  background:rgba(255,255,255,.055);font-weight:1000;
+}
+.winner-name{font-size:24px}.winner-score{margin-top:5px;font-size:15px}
+.step{width:100%;display:grid;place-items:center;font-size:34px;font-weight:1000}
+.step1{height:145px;background:linear-gradient(#ffdf72,#d6971b);color:#593500}
+.step2{height:108px;background:linear-gradient(#e9eef9,#9fb0ce);color:#394a63}
+.step3{height:84px;background:linear-gradient(#e8b68b,#ae6a39);color:#532d13}
+.result-actions{display:flex;justify-content:center;gap:11px;flex-wrap:wrap;margin-top:18px}
 .result-actions button{
-  min-height:56px;padding:10px 22px;border-radius:16px;
-  border:1px solid var(--line);background:#243562;color:white;
-  font-size:18px;font-weight:1000;cursor:pointer;
+  min-height:54px;padding:9px 21px;border-radius:15px;border:1px solid var(--line);
+  background:#243562;color:#fff;font-size:17px;font-weight:1000;cursor:pointer;
 }
-.result-actions .primary{
-  background:linear-gradient(135deg,var(--yellow),var(--orange));border:0;color:#151515;
-}
-#confettiLayer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:4}
-.confetti{
-  position:absolute;top:-28px;width:13px;height:21px;border-radius:3px;
-  animation:fall linear forwards;
-}
-@keyframes fall{
-  0%{transform:translateY(-40px) rotate(0)}
-  100%{transform:translateY(110vh) rotate(720deg)}
-}
+.result-actions .primary{background:linear-gradient(135deg,var(--yellow),var(--orange));border:0;color:#151515}
+#confettiLayer{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:30}
+.confetti{position:absolute;top:-28px;width:13px;height:21px;border-radius:3px;animation:fall linear forwards}
+@keyframes fall{0%{transform:translateY(-40px) rotate(0)}100%{transform:translateY(110vh) rotate(720deg)}}
 
 @media (orientation:portrait){
-  #game{padding:10px}
-  .quiz-card{
-    grid-template-rows:minmax(150px,32%) minmax(0,1fr) auto;
-    padding:13px;gap:9px;
-  }
-  .answers{
-    grid-template-columns:1fr;
-    grid-template-rows:repeat(4,1fr);
-    gap:8px;
-  }
-  .answer{min-height:62px;font-size:clamp(22px,5vw,34px)}
-  .answer.hanja-choice{font-size:clamp(42px,10vw,66px)}
+  .single-layout{padding:55px 10px 8px}
+  .single-card{grid-template-rows:minmax(135px,30%) minmax(0,1fr) auto;padding:12px;gap:8px}
+  .single-answers{grid-template-columns:1fr;grid-template-rows:repeat(4,1fr);gap:7px}
+  .single-answer{min-height:58px;font-size:clamp(21px,5vw,32px)}
+  .single-answer.hanja-choice{font-size:clamp(39px,9vw,62px)}
 }
-@media(max-width:680px){
-  .panel{padding:20px 15px}
+@media(max-width:720px){
+  .panel{padding:19px 14px}
   .setting-row{grid-template-columns:1fr}
-  .setting-title{font-size:17px}
-  .seg button{min-width:80px;min-height:48px;font-size:15px}
+  .setting-title{font-size:16px}
+  .seg button,.part-btn{min-width:73px;min-height:45px;font-size:14px}
   .sound-row{align-items:flex-start;flex-direction:column}
-  .topbar{grid-template-columns:1fr auto}
-  .topbar .top-center{display:none}
 }
 </style>
 </head>
@@ -298,18 +284,33 @@ button{-webkit-tap-highlight-color:transparent}
         <div class="logo">漢</div>
         <div>
           <h1>한자 퀴즈</h1>
-          <p>패드 1인용</p>
+          <p>태블릿 1인용 · 전자칠판 2~4인용 통합판</p>
         </div>
       </div>
 
       <div class="setting-grid">
         <div class="setting-row">
-          <div class="setting-title">학습 범위</div>
-          <div class="seg" data-setting="part">
-            <button type="button" data-value="1">1부</button>
-            <button type="button" data-value="2">2부</button>
-            <button type="button" data-value="3">3부</button>
-            <button type="button" class="active" data-value="all">전체</button>
+          <div class="setting-title">출제 범위</div>
+          <div>
+            <div id="partSelector" class="seg">
+              <button type="button" class="part-btn active" data-part="all">전체</button>
+              <button type="button" class="part-btn active" data-part="1">1부</button>
+              <button type="button" class="part-btn active" data-part="2">2부</button>
+              <button type="button" class="part-btn active" data-part="3">3부</button>
+              <button type="button" class="part-btn active" data-part="4">4부</button>
+              <button type="button" class="part-btn active" data-part="5">5부</button>
+            </div>
+            <div class="range-help">전체를 누르면 1~5부가 모두 선택됩니다. 개별 부를 끄면 전체 선택도 자동으로 꺼집니다.</div>
+          </div>
+        </div>
+
+        <div class="setting-row">
+          <div class="setting-title">인원수</div>
+          <div class="seg" data-setting="players">
+            <button type="button" class="active" data-value="1">1명</button>
+            <button type="button" data-value="2">2명</button>
+            <button type="button" data-value="3">3명</button>
+            <button type="button" data-value="4">4명</button>
           </div>
         </div>
 
@@ -353,46 +354,56 @@ button{-webkit-tap-highlight-color:transparent}
         <small>게임 시작을 눌러야 소리가 시작됩니다.</small>
       </div>
 
-      <div class="start-wrap">
-        <button id="startBtn" type="button">게임 시작</button>
-      </div>
+      <div id="errorText"></div>
+      <div class="start-wrap"><button id="startBtn" type="button">게임 시작</button></div>
     </div>
   </section>
 
   <section id="game" class="hidden">
-    <div class="game-shell">
-      <div class="topbar">
-        <div class="top-left">
-          <div id="roundIndicator" class="pill">1 / 10</div>
-          <div id="scoreIndicator" class="pill score">0점</div>
+    <div id="gameActive" class="game-active">
+      <div id="singleLayout" class="single-layout hidden">
+        <div class="game-topbar">
+          <div style="display:flex;gap:8px">
+            <div id="singleRound" class="pill">1 / 10</div>
+            <div id="singleScore" class="pill">0점</div>
+          </div>
+          <button id="singleSoundChip" type="button">🔊 소리 ON</button>
         </div>
-        <div class="top-center"></div>
-        <div class="top-right">
-          <button id="soundChip" type="button">🔊 소리 ON</button>
+
+        <div class="single-card">
+          <div class="single-question"><div id="singleQuestion" class="hanja">天</div></div>
+          <div id="singleAnswers" class="single-answers"></div>
+          <div class="time-shell"><div id="singleTimebar" class="timebar"></div></div>
         </div>
+        <div id="singleFeedback" class="feedback">정답!</div>
       </div>
 
-      <div class="quiz-card">
-        <div class="question-area">
-          <div id="question" class="question hanja">天</div>
+      <div id="multiLayout" class="multi-layout hidden">
+        <div class="multi-top-space">
+          <div id="multiRound" class="pill multi-round">1 / 10</div>
+          <button id="multiSoundChip" type="button" style="position:absolute;right:12px;top:12px">🔊 소리 ON</button>
         </div>
-        <div id="answers" class="answers"></div>
-        <div class="timebar-shell"><div id="timebar" class="timebar"></div></div>
+        <div id="multiPlayers" class="multi-players"></div>
       </div>
-
-      <div id="feedback" class="feedback">정답!</div>
     </div>
+    <div class="soft-reserve" aria-hidden="true"></div>
   </section>
 
   <section id="result" class="hidden">
     <div class="panel result-card">
       <h2>축하합니다!</h2>
       <div class="result-sub">한자 퀴즈 결과</div>
-      <div class="result-score">
+
+      <div id="singleResult" class="single-result-box hidden">
         <div id="finalScore" class="big-score">900점</div>
         <div id="finalDetail" class="result-detail">9 / 10 정답 · 정답률 90%</div>
         <div id="grade" class="grade">한자 마스터!</div>
       </div>
+
+      <div id="multiResult" class="hidden">
+        <div id="podium" class="podium"></div>
+      </div>
+
       <div class="result-actions">
         <button id="replayBtn" class="primary" type="button">같은 설정으로 다시하기</button>
         <button id="homeBtn" type="button">처음으로</button>
@@ -410,406 +421,483 @@ button{-webkit-tap-highlight-color:transparent}
 
 <script>
 (() => {
-  "use strict";
+"use strict";
 
-  const PART1 = [
-    ["一","한 일"],["二","두 이"],["三","석 삼"],["四","넉 사"],["五","다섯 오"],
-    ["六","여섯 육"],["七","일곱 칠"],["八","여덟 팔"],["九","아홉 구"],["十","열 십"],
-    ["百","일백 백"],["千","일천 천"],["萬","일만 만"],["大","큰 대"],["中","가운데 중"],
-    ["小","작을 소"],["父","아버지 부"],["母","어머니 모"],["男","사내 남"],["女","여자 여"],
-    ["子","아들 자"],["兄","형 형"],["弟","아우 제"],["祖","조상 조"],["家","집 가"],
-    ["族","겨레 족"],["寸","마디 촌"],["月","달 월"],["火","불 화"],["水","물 수"],
-    ["木","나무 목"],["金","쇠 금"],["金","성 김"]
-  ];
+const PARTS = {"1": [["一", "한 일"], ["二", "두 이"], ["三", "석 삼"], ["四", "넉 사"], ["五", "다섯 오"], ["六", "여섯 육"], ["七", "일곱 칠"], ["八", "여덟 팔"], ["九", "아홉 구"], ["十", "열 십"], ["百", "일백 백"], ["千", "일천 천"], ["萬", "일만 만"], ["大", "큰 대"], ["中", "가운데 중"], ["小", "작을 소"], ["父", "아버지 부"], ["母", "어머니 모"], ["男", "사내 남"], ["女", "여자 여"], ["子", "아들 자"], ["兄", "형 형"], ["弟", "아우 제"], ["祖", "조상 조"], ["家", "집 가"], ["族", "겨레 족"], ["寸", "마디 촌"], ["月", "달 월"], ["火", "불 화"], ["水", "물 수"], ["木", "나무 목"], ["金", "쇠 금"], ["金", "성 김"]], "2": [["土", "흙 토"], ["日", "날 일"], ["天", "하늘 천"], ["地", "땅 지"], ["山", "메 산"], ["野", "들 야"], ["海", "바다 해"], ["江", "강 강"], ["川", "내 천"], ["林", "수풀 림"], ["草", "풀 초"], ["花", "꽃 화"], ["石", "돌 석"], ["雨", "비 우"], ["雲", "구름 운"], ["電", "번개 전"], ["自", "스스로 자"], ["然", "그러할 연"], ["人", "사람 인"], ["物", "물건 물"], ["光", "빛 광"], ["風", "바람 풍"], ["方", "방향 방"], ["向", "향할 향"], ["東", "동녘 동"], ["西", "서녘 서"], ["南", "남녘 남"], ["北", "북녘 북"], ["北", "달아날 배"], ["學", "배울 학"], ["校", "학교 교"], ["工", "장인 공"], ["夫", "남편 부"]], "3": [["先", "먼저 선"], ["生", "태어날 생"], ["敎", "가르칠 교"], ["育", "기를 육"], ["室", "집 실"], ["門", "문 문"], ["言", "말씀 언"], ["行", "다닐 행"], ["則", "법칙 칙"], ["業", "일 업"], ["科", "과목 과"], ["目", "눈 목"], ["道", "길 도"], ["德", "덕 덕"], ["國", "나라 국"], ["語", "말씀 어"], ["數", "셈 수"], ["社", "모일 사"], ["會", "모일 회"], ["音", "소리 음"], ["樂", "노래 악(즐거울 락)"], ["美", "아름다울 미"], ["術", "재주 술"], ["體", "몸 체"], ["英", "꽃부리 영"], ["實", "열매 실"], ["問", "물을 문"], ["答", "대답 답"], ["初", "처음 초"], ["等", "무리 등"], ["高", "높을 고"], ["低", "낮을 저"]], "4": [["身", "몸 신"], ["己", "몸 기"], ["頭", "머리 두"], ["容", "얼굴 용"], ["面", "얼굴 면"], ["鼻", "코 비"], ["口", "입 구"], ["毛", "털 모"], ["耳", "귀 이"], ["聞", "들을 문"], ["手", "손 수"], ["指", "가리킬 지"], ["指", "손가락 지"], ["足", "발 족"], ["血", "피 혈"], ["心", "마음 심"], ["性", "성품 성"], ["老", "늙을 로"], ["少", "적을 소"], ["兒", "아이 아"], ["童", "아이 동"], ["上", "윗 상"], ["下", "아래 하"], ["左", "왼 좌"], ["右", "오른 우"], ["內", "안 내"], ["外", "바깥 외"], ["出", "나갈 출"], ["入", "들 입"], ["韓", "한국 한"], ["王", "임금 왕"], ["君", "임금 군"], ["主", "주인 주"]], "5": [["帝", "임금 제"], ["臣", "신하 신"], ["政", "정사 정"], ["治", "다스릴 치"], ["公", "공평할 공"], ["共", "함께 공"], ["私", "사사로울 사"], ["活", "살 활"], ["古", "옛 고"], ["今", "이제 금"], ["都", "도읍 도"], ["市", "시장 시"], ["民", "백성 민"], ["軍", "군사 군"], ["兵", "군사 병"], ["京", "서울 경"], ["法", "법 법"], ["道", "법도 도"], ["元", "으뜸 원"], ["首", "머리 수"], ["邑", "고을 읍"], ["洞", "마을 동"], ["里", "마을 리"], ["村", "마을 촌"], ["春", "봄 춘"], ["夏", "여름 하"], ["秋", "가을 추"], ["冬", "겨울 동"], ["農", "농사 농"], ["事", "일 사"], ["場", "마당 장"], ["所", "바 소"]]};
 
-  const PART2 = [
-    ["土","흙 토"],["日","날 일"],["天","하늘 천"],["地","땅 지"],["山","메 산"],
-    ["野","들 야"],["海","바다 해"],["江","강 강"],["川","내 천"],["林","수풀 림"],
-    ["草","풀 초"],["花","꽃 화"],["石","돌 석"],["雨","비 우"],["雲","구름 운"],
-    ["電","번개 전"],["自","스스로 자"],["然","그러할 연"],["人","사람 인"],["物","물건 물"],
-    ["光","빛 광"],["風","바람 풍"],["方","방향 방"],["向","향할 향"],["東","동녘 동"],
-    ["西","서녘 서"],["南","남녘 남"],["北","북녘 북"],["北","달아날 배"],
-    ["學","배울 학"],["校","학교 교"],["工","장인 공"],["夫","남편 부"]
-  ];
+const settings = {
+  players:1, mode:"mixed", time:10, count:10, sound:true,
+  selectedParts:new Set([1,2,3,4,5])
+};
 
-  const PART3 = [
-    ["先","먼저 선"],["生","태어날 생"],["敎","가르칠 교"],["育","기를 육"],["室","집 실"],
-    ["門","문 문"],["言","말씀 언"],["行","다닐 행"],["則","법칙 칙"],["業","일 업"],
-    ["科","과목 과"],["目","눈 목"],["道","길 도"],["德","덕 덕"],["國","나라 국"],
-    ["語","말씀 어"],["數","셈 수"],["社","모일 사"],["會","모일 회"],["音","소리 음"],
-    ["樂","노래 악(즐거울 락)"],["美","아름다울 미"],["術","재주 술"],["體","몸 체"],
-    ["英","꽃부리 영"],["實","열매 실"],["問","물을 문"],["答","대답 답"],["初","처음 초"],
-    ["等","무리 등"],["高","높을 고"],["低","낮을 저"]
-  ];
+const intro=document.getElementById("intro");
+const game=document.getElementById("game");
+const result=document.getElementById("result");
+const errorText=document.getElementById("errorText");
+const soundEnabled=document.getElementById("soundEnabled");
+const partSelector=document.getElementById("partSelector");
+const singleLayout=document.getElementById("singleLayout");
+const multiLayout=document.getElementById("multiLayout");
+const singleQuestion=document.getElementById("singleQuestion");
+const singleAnswers=document.getElementById("singleAnswers");
+const singleRound=document.getElementById("singleRound");
+const singleScore=document.getElementById("singleScore");
+const singleTimebar=document.getElementById("singleTimebar");
+const singleFeedback=document.getElementById("singleFeedback");
+const multiPlayers=document.getElementById("multiPlayers");
+const multiRound=document.getElementById("multiRound");
+const confettiLayer=document.getElementById("confettiLayer");
 
-  const ALL = [...PART1,...PART2,...PART3];
-  const settings = {part:"all",mode:"mixed",time:10,count:10,sound:true};
+let state=null;
+let timerId=null;
+let rafId=null;
 
-  const intro=document.getElementById("intro");
-  const game=document.getElementById("game");
-  const result=document.getElementById("result");
-  const questionEl=document.getElementById("question");
-  const answersEl=document.getElementById("answers");
-  const roundIndicator=document.getElementById("roundIndicator");
-  const scoreIndicator=document.getElementById("scoreIndicator");
-  const timebar=document.getElementById("timebar");
-  const feedback=document.getElementById("feedback");
-  const soundEnabledEl=document.getElementById("soundEnabled");
-  const soundChip=document.getElementById("soundChip");
-  const confettiLayer=document.getElementById("confettiLayer");
+const Sound={
+  ready:false,muted:false,tickingMark:0,
+  init(){
+    if(this.ready)return;
+    this.bgm=document.getElementById("bgmAudio");
+    this.start=document.getElementById("startAudio");
+    this.revealEl=document.getElementById("revealAudio");
+    this.tickEl=document.getElementById("tickAudio");
+    this.tapEl=document.getElementById("tapAudio");
+    this.fanfareEl=document.getElementById("fanfareAudio");
+    this.bgm.volume=.28;this.start.volume=.9;this.revealEl.volume=.9;
+    this.tickEl.volume=1;this.tapEl.volume=.6;this.fanfareEl.volume=1;
+    this.ready=true;
+  },
+  async play(el,restart=true){
+    this.init();
+    if(!settings.sound||this.muted||!el)return false;
+    try{if(restart)el.currentTime=0;await el.play();return true}catch(e){return false}
+  },
+  async enable(){
+    this.init();this.muted=false;settings.sound=true;soundEnabled.checked=true;updateSoundChips();
+  },
+  disable(){
+    this.init();this.muted=true;settings.sound=false;soundEnabled.checked=false;updateSoundChips();
+    [this.bgm,this.start,this.revealEl,this.tickEl,this.tapEl,this.fanfareEl].forEach(a=>{
+      if(a){a.pause();a.currentTime=0}
+    });
+  },
+  async unlock(){return this.play(this.start,true)},
+  click(){this.play(this.tapEl,true)},
+  tick(){this.play(this.tickEl,true)},
+  reveal(){this.play(this.revealEl,true)},
+  fanfare(){this.stopBgm();this.play(this.fanfareEl,true)},
+  startBgm(){
+    this.init();if(!settings.sound||this.muted)return;
+    this.bgm.currentTime=0;this.bgm.play().catch(()=>{});
+  },
+  stopBgm(){this.init();this.bgm.pause();this.bgm.currentTime=0}
+};
 
-  let state=null;
-  let timerId=null;
-  let rafId=null;
+function updateSoundChips(){
+  const text=settings.sound?"🔊 소리 ON":"🔇 소리 OFF";
+  document.getElementById("singleSoundChip").textContent=text;
+  document.getElementById("multiSoundChip").textContent=text;
+}
 
-  const Sound={
-    ready:false,muted:false,tickingMark:0,
-    init(){
-      if(this.ready)return;
-      this.bgm=document.getElementById("bgmAudio");
-      this.start=document.getElementById("startAudio");
-      this.revealEl=document.getElementById("revealAudio");
-      this.tickEl=document.getElementById("tickAudio");
-      this.tapEl=document.getElementById("tapAudio");
-      this.fanfareEl=document.getElementById("fanfareAudio");
-      this.bgm.volume=.28;this.start.volume=.9;this.revealEl.volume=.9;
-      this.tickEl.volume=1;this.tapEl.volume=.6;this.fanfareEl.volume=1;
-      this.ready=true;
-    },
-    async play(el,restart=true){
-      this.init();
-      if(!settings.sound||this.muted||!el)return false;
-      try{
-        if(restart)el.currentTime=0;
-        await el.play();
-        return true;
-      }catch(e){console.warn("audio blocked",e);return false}
-    },
-    async enable(){
-      this.init();this.muted=false;settings.sound=true;
-      soundEnabledEl.checked=true;soundChip.textContent="🔊 소리 ON";
-    },
-    disable(){
-      this.init();this.muted=true;settings.sound=false;
-      soundEnabledEl.checked=false;soundChip.textContent="🔇 소리 OFF";
-      [this.bgm,this.start,this.revealEl,this.tickEl,this.tapEl,this.fanfareEl].forEach(a=>{
-        if(a){a.pause();a.currentTime=0}
-      });
-    },
-    async unlockAndStart(){return this.play(this.start,true)},
-    click(){this.play(this.tapEl,true)},
-    tick(){this.play(this.tickEl,true)},
-    reveal(){this.play(this.revealEl,true)},
-    fanfare(){this.stopBgm();this.play(this.fanfareEl,true)},
-    startBgm(){
-      this.init();
-      if(!settings.sound||this.muted)return;
-      this.bgm.currentTime=0;
-      this.bgm.play().catch(()=>{});
-    },
-    stopBgm(){
-      this.init();this.bgm.pause();this.bgm.currentTime=0;
+document.querySelectorAll(".seg[data-setting]").forEach(group=>{
+  group.addEventListener("click",e=>{
+    const btn=e.target.closest("button");
+    if(!btn)return;
+    group.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
+    btn.classList.add("active");
+    const key=group.dataset.setting;
+    const raw=btn.dataset.value;
+    if(key==="players"||key==="time")settings[key]=Number(raw);
+    else if(key==="count")settings[key]=raw==="all"?"all":Number(raw);
+    else settings[key]=raw;
+  });
+});
+
+partSelector.addEventListener("click",e=>{
+  const btn=e.target.closest(".part-btn");
+  if(!btn)return;
+  const part=btn.dataset.part;
+  if(part==="all"){
+    // 전체 버튼은 토글처럼 동작한다.
+    // 모두 선택된 상태에서 누르면 전부 해제,
+    // 하나라도 해제된 상태에서 누르면 전부 선택.
+    if(settings.selectedParts.size===5){
+      settings.selectedParts.clear();
+    }else{
+      settings.selectedParts=new Set([1,2,3,4,5]);
     }
+  }else{
+    const n=Number(part);
+    if(settings.selectedParts.has(n))settings.selectedParts.delete(n);
+    else settings.selectedParts.add(n);
+  }
+  syncPartButtons();
+});
+
+function syncPartButtons(){
+  for(const btn of partSelector.querySelectorAll(".part-btn")){
+    const p=btn.dataset.part;
+    if(p==="all")btn.classList.toggle("active",settings.selectedParts.size===5);
+    else btn.classList.toggle("active",settings.selectedParts.has(Number(p)));
+  }
+}
+
+soundEnabled.addEventListener("change",async()=>{
+  if(soundEnabled.checked){await Sound.enable();await Sound.unlock()}
+  else Sound.disable();
+});
+for(const id of ["singleSoundChip","multiSoundChip"]){
+  document.getElementById(id).addEventListener("click",async()=>{
+    if(settings.sound)Sound.disable();
+    else{await Sound.enable();await Sound.unlock();Sound.startBgm()}
+  });
+}
+
+document.getElementById("startBtn").addEventListener("click",startGame);
+document.getElementById("replayBtn").addEventListener("click",startGame);
+document.getElementById("homeBtn").addEventListener("click",goHome);
+
+function shuffle(arr){
+  const a=arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function selectedData(){
+  const out=[];
+  for(const p of [...settings.selectedParts].sort())out.push(...PARTS[p]);
+  return out;
+}
+
+function groupByHanja(data){
+  const map=new Map();
+  for(const [h,r] of data){
+    if(!map.has(h))map.set(h,[]);
+    if(!map.get(h).includes(r))map.get(h).push(r);
+  }
+  return [...map.entries()].map(([hanja,readings])=>({hanja,readings}));
+}
+
+function chooseType(){
+  if(settings.mode==="mixed")return Math.random()<.5?"reading":"hanja";
+  return settings.mode;
+}
+
+async function startGame(){
+  stopTimer();clearConfetti();errorText.textContent="";
+  if(settings.selectedParts.size===0){
+    intro.classList.remove("hidden");game.classList.add("hidden");result.classList.add("hidden");
+    errorText.textContent="출제 범위를 1개 이상 선택해 주세요.";
+    return;
+  }
+
+  settings.sound=soundEnabled.checked;
+  if(settings.sound){await Sound.enable();await Sound.unlock()}else Sound.disable();
+
+  const data=selectedData();
+  const grouped=groupByHanja(data);
+  const qCount=settings.count==="all"?grouped.length:Math.min(settings.count,grouped.length);
+
+  state={
+    data, grouped, questions:shuffle(grouped).slice(0,qCount), index:0,
+    scores:Array(settings.players).fill(0),
+    correct:Array(settings.players).fill(0),
+    answers:Array(settings.players).fill(null),
+    type:null,revealed:false,startedAt:0
   };
 
-  document.querySelectorAll(".seg").forEach(group=>{
-    group.addEventListener("click",e=>{
-      const btn=e.target.closest("button");
-      if(!btn)return;
-      group.querySelectorAll("button").forEach(b=>b.classList.remove("active"));
-      btn.classList.add("active");
-      const key=group.dataset.setting;
-      const raw=btn.dataset.value;
-      if(key==="time")settings[key]=Number(raw);
-      else if(key==="count")settings[key]=raw==="all"?"all":Number(raw);
-      else settings[key]=raw;
-    });
-  });
+  intro.classList.add("hidden");result.classList.add("hidden");game.classList.remove("hidden");
+  singleLayout.classList.toggle("hidden",settings.players!==1);
+  multiLayout.classList.toggle("hidden",settings.players===1);
+  Sound.startBgm();
+  renderQuestion();
+}
 
-  soundEnabledEl.addEventListener("change",async()=>{
-    if(soundEnabledEl.checked){
-      await Sound.enable();
-      await Sound.unlockAndStart();
-    }else Sound.disable();
-  });
+function goHome(){
+  stopTimer();clearConfetti();Sound.stopBgm();
+  game.classList.add("hidden");result.classList.add("hidden");intro.classList.remove("hidden");
+}
 
-  soundChip.addEventListener("click",async()=>{
-    if(settings.sound)Sound.disable();
-    else{
-      await Sound.enable();
-      await Sound.unlockAndStart();
-      Sound.startBgm();
-    }
-  });
-
-  document.getElementById("startBtn").addEventListener("click",startGame);
-  document.getElementById("replayBtn").addEventListener("click",startGame);
-  document.getElementById("homeBtn").addEventListener("click",goHome);
-
-  function shuffle(arr){
-    const a=arr.slice();
-    for(let i=a.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
-    }
-    return a;
+function buildOptions(item,type){
+  if(type==="reading"){
+    const correct=item.readings.join(" · ");
+    const pool=state.grouped
+      .filter(x=>x.hanja!==item.hanja)
+      .map(x=>({label:x.readings.join(" · "),correct:false}));
+    return [{label:correct,correct:true},...shuffle(pool).slice(0,3)];
   }
 
-  function poolForPart(){
-    if(settings.part==="1")return PART1;
-    if(settings.part==="2")return PART2;
-    if(settings.part==="3")return PART3;
-    return ALL;
+  const correct=item.hanja;
+  const readings=new Set(item.readings);
+  const pool=state.grouped
+    .filter(x=>x.hanja!==item.hanja)
+    .filter(x=>!x.readings.some(r=>readings.has(r)))
+    .map(x=>({label:x.hanja,correct:false}));
+  return [{label:correct,correct:true},...shuffle(pool).slice(0,3)];
+}
+
+function renderQuestion(){
+  stopTimer();
+  state.revealed=false;
+  state.answers=Array(settings.players).fill(null);
+  state.type=chooseType();
+  state.startedAt=performance.now();
+
+  const item=state.questions[state.index];
+  const commonOptions=buildOptions(item,state.type);
+
+  if(settings.players===1)renderSingle(item,commonOptions);
+  else renderMulti(item,commonOptions);
+
+  if(settings.time>0)startTimer();
+}
+
+function renderSingle(item,commonOptions){
+  singleRound.textContent=`${state.index+1} / ${state.questions.length}`;
+  singleScore.textContent=`${state.scores[0]}점`;
+  singleFeedback.className="feedback";
+  singleTimebar.style.width="100%";singleTimebar.classList.remove("urgent");
+  singleAnswers.classList.remove("locked");singleAnswers.innerHTML="";
+
+  singleQuestion.className=state.type==="reading"?"hanja":"reading";
+  singleQuestion.textContent=state.type==="reading"?item.hanja:item.readings.join(" · ");
+
+  for(const option of shuffle(commonOptions)){
+    const btn=document.createElement("button");
+    btn.type="button";
+    btn.className="single-answer"+(state.type==="hanja"?" hanja-choice":"");
+    btn.textContent=option.label;btn.dataset.correct=option.correct?"1":"0";
+    bindPointer(btn,()=>singleSelect(btn,option));
+    singleAnswers.appendChild(btn);
   }
+}
 
-  async function startGame(){
-    stopTimer();clearConfetti();
-    settings.sound=soundEnabledEl.checked;
-    if(settings.sound){
-      await Sound.enable();
-      await Sound.unlockAndStart();
-    }else Sound.disable();
+function renderMulti(item,commonOptions){
+  multiRound.textContent=`${state.index+1} / ${state.questions.length}`;
+  multiPlayers.style.gridTemplateColumns=`repeat(${settings.players},minmax(0,1fr))`;
+  multiPlayers.innerHTML="";
 
-    const pool=poolForPart();
-    const grouped=groupQuestions(pool);
-    const requested=settings.count==="all"?grouped.length:Math.min(settings.count,grouped.length);
-    const questions=shuffle(grouped).slice(0,requested);
+  for(let p=0;p<settings.players;p++){
+    const player=document.createElement("section");
+    player.className="player";player.dataset.player=p;
 
-    state={
-      pool,
-      questions,
-      index:0,
-      score:0,
-      correct:0,
-      revealed:false,
-      startedAt:0,
-      currentType:null
-    };
+    const head=document.createElement("div");
+    head.className="player-head";
+    head.innerHTML=`<span class="player-name">${p+1}번</span><span class="player-score">${state.scores[p]}점</span>`;
 
-    intro.classList.add("hidden");
-    result.classList.add("hidden");
-    game.classList.remove("hidden");
-    Sound.startBgm();
-    renderQuestion();
-  }
+    const qw=document.createElement("div");qw.className="player-question-wrap";
+    const q=document.createElement("div");
+    q.className="player-question "+(state.type==="reading"?"hanja":"reading");
+    q.textContent=state.type==="reading"?item.hanja:item.readings.join(" · ");
+    qw.appendChild(q);
 
-  function goHome(){
-    stopTimer();clearConfetti();Sound.stopBgm();
-    game.classList.add("hidden");
-    result.classList.add("hidden");
-    intro.classList.remove("hidden");
-  }
+    const aw=document.createElement("div");aw.className="player-answer-wrap";
+    const answers=document.createElement("div");answers.className="multi-answers";
 
-  // 같은 글자(예: 金, 北)는 하나의 문제 항목으로 묶는다.
-  function groupQuestions(pool){
-    const map=new Map();
-    for(const [h,r] of pool){
-      if(!map.has(h))map.set(h,[]);
-      if(!map.get(h).includes(r))map.get(h).push(r);
-    }
-    return [...map.entries()].map(([hanja,readings])=>({hanja,readings}));
-  }
-
-  function chooseType(){
-    if(settings.mode==="mixed")return Math.random()<.5?"reading":"hanja";
-    return settings.mode;
-  }
-
-  function renderQuestion(){
-    stopTimer();
-    state.revealed=false;
-    feedback.className="feedback";
-    timebar.style.width="100%";
-    timebar.classList.remove("urgent");
-    answersEl.classList.remove("locked");
-    answersEl.innerHTML="";
-
-    const item=state.questions[state.index];
-    state.currentType=chooseType();
-
-    roundIndicator.textContent=`${state.index+1} / ${state.questions.length}`;
-    scoreIndicator.textContent=`${state.score}점`;
-
-    if(state.currentType==="reading"){
-      questionEl.className="question hanja";
-      questionEl.textContent=item.hanja;
-    }else{
-      questionEl.className="question reading";
-      questionEl.textContent=item.readings.join(" · ");
-    }
-
-    const options=shuffle(buildOptions(item,state.currentType));
-    options.forEach(option=>{
+    for(const option of shuffle(commonOptions)){
       const btn=document.createElement("button");
       btn.type="button";
-      btn.className="answer"+(state.currentType==="hanja"?" hanja-choice":"");
-      btn.textContent=option.label;
-      btn.dataset.correct=option.correct?"1":"0";
-      bindAnswer(btn,option);
-      answersEl.appendChild(btn);
+      btn.className="multi-answer"+(state.type==="hanja"?" hanja-choice":"");
+      btn.textContent=option.label;btn.dataset.correct=option.correct?"1":"0";
+      bindPointer(btn,()=>multiSelect(p,btn,option));
+      answers.appendChild(btn);
+    }
+
+    const ts=document.createElement("div");ts.className="time-shell";
+    const tb=document.createElement("div");tb.className="timebar";tb.dataset.player=p;ts.appendChild(tb);
+
+    aw.appendChild(answers);aw.appendChild(ts);
+    player.appendChild(head);player.appendChild(qw);player.appendChild(aw);
+    multiPlayers.appendChild(player);
+  }
+}
+
+function bindPointer(el,fn){
+  const act=e=>{if(e.cancelable)e.preventDefault();e.stopPropagation();fn()};
+  if(window.PointerEvent)el.addEventListener("pointerdown",act,{passive:false});
+  else{
+    el.addEventListener("touchstart",act,{passive:false});
+    el.addEventListener("mousedown",act);
+  }
+}
+
+function singleSelect(btn,option){
+  if(state.revealed)return;
+  state.revealed=true;stopTimer();singleAnswers.classList.add("locked");Sound.click();
+
+  [...singleAnswers.querySelectorAll(".single-answer")].forEach(b=>{
+    if(b.dataset.correct==="1")b.classList.add("correct-answer");
+  });
+
+  if(option.correct){
+    btn.classList.add("chosen-correct");state.scores[0]+=100;state.correct[0]++;
+    showSingleFeedback("정답!","ok");
+  }else{
+    btn.classList.add("chosen-wrong");showSingleFeedback("아쉬워!","no");
+  }
+  singleScore.textContent=`${state.scores[0]}점`;
+  Sound.reveal();
+  setTimeout(nextQuestion,1100);
+}
+
+function multiSelect(p,btn,option){
+  if(state.revealed||state.answers[p]!==null)return;
+  state.answers[p]={btn,correct:option.correct};
+  const player=multiPlayers.querySelector(`.player[data-player="${p}"]`);
+  player.classList.add("locked");freezePlayerBar(p);Sound.click();
+
+  if(state.answers.every(a=>a!==null))revealMulti();
+}
+
+function freezePlayerBar(p){
+  if(settings.time<=0)return;
+  const elapsed=(performance.now()-state.startedAt)/1000;
+  const remain=Math.max(0,1-(elapsed/settings.time));
+  const bar=multiPlayers.querySelector(`.timebar[data-player="${p}"]`);
+  if(bar){bar.dataset.frozen="1";bar.style.width=`${remain*100}%`}
+}
+
+function showSingleFeedback(text,kind){
+  singleFeedback.textContent=text;singleFeedback.className=`feedback show ${kind}`;
+}
+
+function timeoutQuestion(){
+  if(state.revealed)return;
+  if(settings.players===1){
+    state.revealed=true;stopTimer();singleAnswers.classList.add("locked");
+    [...singleAnswers.querySelectorAll(".single-answer")].forEach(b=>{
+      if(b.dataset.correct==="1")b.classList.add("correct-answer");
     });
+    showSingleFeedback("시간초과","timeout");Sound.reveal();setTimeout(nextQuestion,1200);
+  }else revealMulti();
+}
 
-    state.startedAt=performance.now();
-    if(settings.time>0)startTimer();
-  }
+function revealMulti(){
+  if(state.revealed)return;
+  state.revealed=true;stopTimer();Sound.reveal();
 
-  function buildOptions(item,type){
-    const grouped=groupQuestions(state.pool);
+  for(let p=0;p<settings.players;p++){
+    const player=multiPlayers.querySelector(`.player[data-player="${p}"]`);
+    player.classList.remove("locked");player.classList.add("reveal");
 
-    if(type==="reading"){
-      const correctLabel=item.readings.join(" · ");
-      const candidates=grouped
-        .filter(x=>x.hanja!==item.hanja)
-        .map(x=>({label:x.readings.join(" · "),correct:false}));
-      return [{label:correctLabel,correct:true},...shuffle(candidates).slice(0,3)];
-    }
-
-    const correctLabel=item.hanja;
-    // 현재 훈음과 겹치는 다른 한자가 있을 경우 오답 후보에서 제외
-    const currentReadings=new Set(item.readings);
-    const candidates=grouped
-      .filter(x=>x.hanja!==item.hanja)
-      .filter(x=>!x.readings.some(r=>currentReadings.has(r)))
-      .map(x=>({label:x.hanja,correct:false}));
-    return [{label:correctLabel,correct:true},...shuffle(candidates).slice(0,3)];
-  }
-
-  function bindAnswer(button,option){
-    const act=e=>{
-      if(e.cancelable)e.preventDefault();
-      e.stopPropagation();
-      selectAnswer(button,option);
-    };
-    if(window.PointerEvent){
-      button.addEventListener("pointerdown",act,{passive:false});
-    }else{
-      button.addEventListener("touchstart",act,{passive:false});
-      button.addEventListener("mousedown",act);
-    }
-  }
-
-  function selectAnswer(button,option){
-    if(state.revealed)return;
-    state.revealed=true;
-    stopTimer();
-    answersEl.classList.add("locked");
-    Sound.click();
-
-    const buttons=[...answersEl.querySelectorAll(".answer")];
-    buttons.forEach(b=>{
+    player.querySelectorAll(".multi-answer").forEach(b=>{
       if(b.dataset.correct==="1")b.classList.add("correct-answer");
     });
 
-    if(option.correct){
-      button.classList.add("chosen-correct");
-      state.score+=100;
-      state.correct++;
-      showFeedback("정답!","ok");
+    const ans=state.answers[p];
+    if(ans){
+      if(ans.correct){
+        ans.btn.classList.add("chosen-correct");state.scores[p]+=100;state.correct[p]++;
+      }else ans.btn.classList.add("chosen-wrong");
+    }
+    player.querySelector(".player-score").textContent=`${state.scores[p]}점`;
+  }
+  setTimeout(nextQuestion,1750);
+}
+
+function nextQuestion(){
+  state.index++;
+  if(state.index>=state.questions.length)showResult();
+  else renderQuestion();
+}
+
+function startTimer(){
+  const duration=settings.time*1000;
+  Sound.tickingMark=Math.ceil(settings.time);
+
+  const tick=now=>{
+    if(state.revealed)return;
+    const elapsed=now-state.startedAt;
+    const remain=Math.max(0,duration-elapsed);
+    const ratio=remain/duration;
+    const sec=Math.ceil(remain/1000);
+
+    if(settings.players===1){
+      singleTimebar.style.width=`${ratio*100}%`;
+      singleTimebar.classList.toggle("urgent",sec<=3&&sec>=1);
     }else{
-      button.classList.add("chosen-wrong");
-      showFeedback("아쉬워!","no");
+      multiPlayers.querySelectorAll(".timebar").forEach(bar=>{
+        if(bar.dataset.frozen==="1")return;
+        bar.style.width=`${ratio*100}%`;
+        bar.classList.toggle("urgent",sec<=3&&sec>=1);
+      });
     }
 
-    scoreIndicator.textContent=`${state.score}점`;
-    Sound.reveal();
-    setTimeout(nextQuestion,1150);
-  }
-
-  function timeoutReveal(){
-    if(state.revealed)return;
-    state.revealed=true;
-    stopTimer();
-    answersEl.classList.add("locked");
-    [...answersEl.querySelectorAll(".answer")].forEach(b=>{
-      if(b.dataset.correct==="1")b.classList.add("correct-answer");
-    });
-    showFeedback("시간초과","timeout");
-    Sound.reveal();
-    setTimeout(nextQuestion,1250);
-  }
-
-  function showFeedback(text,kind){
-    feedback.textContent=text;
-    feedback.className=`feedback show ${kind}`;
-  }
-
-  function nextQuestion(){
-    state.index++;
-    if(state.index>=state.questions.length)showResult();
-    else renderQuestion();
-  }
-
-  function startTimer(){
-    const duration=settings.time*1000;
-    Sound.tickingMark=Math.ceil(settings.time);
-    const tick=now=>{
-      if(state.revealed)return;
-      const elapsed=now-state.startedAt;
-      const remain=Math.max(0,duration-elapsed);
-      const ratio=remain/duration;
-      timebar.style.width=`${ratio*100}%`;
-      const sec=Math.ceil(remain/1000);
-
-      if(sec<=3&&sec>=1){
-        timebar.classList.add("urgent");
-        if(sec!==Sound.tickingMark){
-          Sound.tickingMark=sec;
-          Sound.tick();
-        }
-      }else timebar.classList.remove("urgent");
-
-      if(remain<=0){
-        timeoutReveal();
-        return;
-      }
-      rafId=requestAnimationFrame(tick);
-    };
+    if(sec<=3&&sec>=1&&sec!==Sound.tickingMark){
+      Sound.tickingMark=sec;Sound.tick();
+    }
+    if(remain<=0){timeoutQuestion();return}
     rafId=requestAnimationFrame(tick);
-    timerId=setTimeout(timeoutReveal,duration+80);
-  }
+  };
 
-  function stopTimer(){
-    if(timerId){clearTimeout(timerId);timerId=null}
-    if(rafId){cancelAnimationFrame(rafId);rafId=null}
-  }
+  rafId=requestAnimationFrame(tick);
+  timerId=setTimeout(timeoutQuestion,duration+80);
+}
 
-  function showResult(){
-    stopTimer();
-    game.classList.add("hidden");
-    result.classList.remove("hidden");
-    Sound.fanfare();
-    spawnConfetti(80);
+function stopTimer(){
+  if(timerId){clearTimeout(timerId);timerId=null}
+  if(rafId){cancelAnimationFrame(rafId);rafId=null}
+}
 
+function showResult(){
+  stopTimer();game.classList.add("hidden");result.classList.remove("hidden");
+  Sound.fanfare();spawnConfetti(85);
+
+  const one=settings.players===1;
+  document.getElementById("singleResult").classList.toggle("hidden",!one);
+  document.getElementById("multiResult").classList.toggle("hidden",one);
+
+  if(one){
     const total=state.questions.length;
-    const pct=Math.round((state.correct/total)*100);
-    document.getElementById("finalScore").textContent=`${state.score}점`;
-    document.getElementById("finalDetail").textContent=`${state.correct} / ${total} 정답 · 정답률 ${pct}%`;
-
+    const pct=Math.round((state.correct[0]/total)*100);
+    document.getElementById("finalScore").textContent=`${state.scores[0]}점`;
+    document.getElementById("finalDetail").textContent=`${state.correct[0]} / ${total} 정답 · 정답률 ${pct}%`;
     let grade="조금 더 연습!";
     if(pct>=90)grade="한자 마스터!";
     else if(pct>=70)grade="아주 좋아!";
     else if(pct>=50)grade="좋은 도전!";
     document.getElementById("grade").textContent=grade;
-  }
+  }else renderPodium();
+}
 
-  function spawnConfetti(count){
-    clearConfetti();
-    confettiLayer.classList.remove("hidden");
-    const colors=["#ffd84d","#ff6677","#48df9c","#42d9ff","#917cff","#fff"];
-    for(let i=0;i<count;i++){
-      const c=document.createElement("div");
-      c.className="confetti";
-      c.style.left=`${Math.random()*100}%`;
-      c.style.background=colors[Math.floor(Math.random()*colors.length)];
-      c.style.animationDuration=`${3+Math.random()*2.2}s`;
-      c.style.animationDelay=`${Math.random()*.8}s`;
-      confettiLayer.appendChild(c);
-    }
+function renderPodium(){
+  const rows=state.scores.map((score,i)=>({player:i+1,score,correct:state.correct[i]}))
+    .sort((a,b)=>b.score-a.score||b.correct-a.correct||a.player-b.player);
+  const podium=document.getElementById("podium");podium.innerHTML="";
+  const display=[];
+  if(rows[1])display.push({r:rows[1],place:2});
+  if(rows[0])display.push({r:rows[0],place:1});
+  if(rows[2])display.push({r:rows[2],place:3});
+
+  for(const x of display){
+    const cls=x.place===1?"gold":x.place===2?"silver":"bronze";
+    const step=x.place===1?"step1":x.place===2?"step2":"step3";
+    const div=document.createElement("div");div.className="winner";
+    div.innerHTML=`<div class="medal ${cls}">${x.place}</div>
+      <div class="winner-info"><div class="winner-name">${x.r.player}번</div>
+      <div class="winner-score">${x.r.score}점 · ${x.r.correct}/${state.questions.length} 정답</div></div>
+      <div class="step ${step}">${x.place}</div>`;
+    podium.appendChild(div);
   }
-  function clearConfetti(){
-    confettiLayer.innerHTML="";
-    confettiLayer.classList.add("hidden");
+}
+
+function spawnConfetti(count){
+  clearConfetti();confettiLayer.classList.remove("hidden");
+  const colors=["#ffd84d","#ff6677","#48df9c","#42d9ff","#927cff","#fff"];
+  for(let i=0;i<count;i++){
+    const c=document.createElement("div");c.className="confetti";
+    c.style.left=`${Math.random()*100}%`;
+    c.style.background=colors[Math.floor(Math.random()*colors.length)];
+    c.style.animationDuration=`${3+Math.random()*2.2}s`;
+    c.style.animationDelay=`${Math.random()*.8}s`;
+    confettiLayer.appendChild(c);
   }
+}
+function clearConfetti(){confettiLayer.innerHTML="";confettiLayer.classList.add("hidden")}
+
+syncPartButtons();
+updateSoundChips();
 })();
 </script>
 </body>
