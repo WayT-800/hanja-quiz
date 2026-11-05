@@ -1,0 +1,1 @@
+window.hanjaRanking = { url: "", publicKey: "" };
