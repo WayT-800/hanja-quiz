@@ -320,6 +320,90 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
 .ranking-mine .ranking-row{border-color:#42d9ff66;background:#42d9ff10}
 #rankingStatus,#rankingMine{font-size:14px;color:#c6d5eb}
 @media(max-width:420px){#rankingDialog{padding:16px}.ranking-columns,.ranking-row{grid-template-columns:35px 1fr 57px 67px;gap:4px;font-size:13px}}
+/* Challenge setup */
+#intro .panel:has(#challengeSetup:not(.hidden)){
+  width:min(620px,96vw);
+}
+#challengeSetup{
+  margin:0;
+  padding:18px 0 0;
+  border:0;
+  border-top:1px solid var(--line);
+  border-radius:0;
+  text-align:center;
+}
+#challengeSetup h2{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:10px;
+  margin:0 0 14px;
+  font-size:28px;
+  letter-spacing:-1px;
+}
+#challengeSetup h2 span{
+  padding:4px 9px;
+  border:1px solid #42d9ff45;
+  border-radius:8px;
+  color:var(--cyan);
+  font-size:13px;
+  letter-spacing:0;
+}
+.challenge-meta{display:flex;justify-content:center;gap:0;color:#d6e1fb;font-size:14px}
+.challenge-meta span+span{border-left:1px solid #ffffff25;margin-left:14px;padding-left:14px}
+#challengeSetup .challenge-rule{margin:12px 0 24px;font-size:13px;color:var(--muted)}
+#challengeForm{display:grid;gap:20px}
+#challengeForm label{display:grid;gap:10px;color:#c4d1ed;font-size:14px;font-weight:700}
+#challengeSetup #nickname{
+  box-sizing:border-box;
+  width:min(300px,100%);
+  margin:auto;
+  padding:16px 12px;
+  border:1px solid #6179ad;
+  border-radius:14px;
+  background:#111e3e;
+  color:white;
+  font-size:34px;
+  font-weight:800;
+  font-variant-numeric:tabular-nums;
+  letter-spacing:10px;
+  text-indent:10px;
+  text-align:center;
+  outline:none;
+  transition:border-color .15s,box-shadow .15s;
+}
+#challengeSetup #nickname::placeholder{color:#62759b}
+#challengeSetup #nickname:focus{border-color:var(--cyan);box-shadow:0 0 0 4px #42d9ff15}
+#challengeSetup button{
+  width:100%;
+  min-height:52px;
+  margin:0;
+  border-radius:13px;
+  cursor:pointer;
+  font-weight:800;
+}
+#challengeForm button{
+  border:0;
+  background:linear-gradient(135deg,var(--yellow),var(--orange));
+  color:#211c16;
+  font-size:20px;
+  box-shadow:0 5px 18px #ff9d4518;
+}
+#challengeSetup #viewBoard{
+  margin-top:12px;
+  border:1px solid #6279ac70;
+  background:#1b2b51;
+  color:#d9e8ff;
+  font-size:16px;
+}
+#challengeSetup button:hover{filter:brightness(1.08)}
+#challengeSetup button:active{transform:translateY(1px)}
+#challengeSetup button:focus-visible{outline:2px solid var(--cyan);outline-offset:3px}
+@media(max-width:480px){
+  #challengeSetup .challenge-rule{font-size:12px;margin-bottom:18px}
+  #challengeSetup h2{font-size:25px}
+  #challengeSetup #nickname{font-size:28px;padding:12px}
+}
 </style>
 </head>
 <body>
@@ -349,8 +433,9 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
       </div>
       <button id="backToModes" class="hidden" type="button">← 모드 선택</button>
       <section id="challengeSetup" class="challenge-box hidden">
-        <h2>도전모드(1인) · 30문제</h2>
-        <p>각 부에서 6문제씩 풀어요. 정답 수가 같으면 풀이 시간이 짧은 기록이 앞서요.</p>
+        <h2>도전모드<span>1인</span></h2>
+        <div class="challenge-meta"><span>전체 범위</span><span>30문제</span><span>월별 랭킹</span></div>
+        <p class="challenge-rule">정답 수가 같으면, 더 빠른 기록이 앞서요.</p>
         <form id="challengeForm">
           <label>숫자 4자리 닉네임 <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
           <button type="submit">도전 시작</button>
