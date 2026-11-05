@@ -443,7 +443,7 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
         <div class="challenge-meta"><span>전체 범위</span><span>30문제</span><span>월별 랭킹</span></div>
         <p class="challenge-rule">정답 수가 같으면, 더 빠른 기록이 앞서요.</p>
         <form id="challengeForm">
-          <label><span id="nicknameLabel">숫자 4자리 닉네임</span> <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
+          <label><span id="nicknameLabel">닉네임(숫자 4자리)</span> <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
           <button type="submit">도전 시작</button>
         </form>
         <button id="viewBoard" type="button">순위표 보기</button>
@@ -754,7 +754,7 @@ document.getElementById("challengePlayers").onclick=event=>{
   if(!button)return;
   challengePlayers=Number(button.dataset.players);
   document.querySelectorAll("#challengePlayers button").forEach(item=>item.setAttribute("aria-pressed",item===button));
-  document.getElementById("nicknameLabel").textContent=challengePlayers===1?"숫자 4자리 닉네임":"숫자 4자리 팀 닉네임";
+  document.getElementById("nicknameLabel").textContent=challengePlayers===1?"닉네임(숫자 4자리)":"팀 닉네임(숫자 4자리)";
   document.getElementById("challengeDescription").textContent=challengePlayers===1?"혼자 도전하고 나의 최고 기록을 세워요.":challengePlayers+"명이 각자 풀고, 점수를 합쳐 도전해요.";
   const start=document.querySelector("#challengeForm button");
   start.disabled=challengePlayers!==1;
@@ -1166,7 +1166,7 @@ async function openRanking(players){
     rows.filter(row=>Number(row.place)<=10).slice(0,10).forEach(row=>top.appendChild(rankingRow(row)));
     const personal=rows.find(row=>row.nickname===nickname);
     if(personal)mine.appendChild(rankingRow(personal));
-    else mine.textContent=nickname?nickname+" · 이번 달 기록이 없어요.":"도전 화면에서 숫자 4자리 닉네임을 입력하면 내 기록도 볼 수 있어요.";
+    else mine.textContent=nickname?nickname+" · 이번 달 기록이 없어요.":"도전 화면에서 닉네임(숫자 4자리)을 입력하면 내 기록도 볼 수 있어요.";
   }catch(error){
     if(request===rankingRequest)status.textContent=error.message;
   }
