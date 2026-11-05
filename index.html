@@ -404,12 +404,18 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
   #challengeSetup h2{font-size:25px}
   #challengeSetup #nickname{font-size:28px;padding:12px}
 }
+.player-choices{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:18px 0}
+#challengeSetup .player-choices button,.player-choices button{width:auto;min-height:48px;padding:10px;margin:0;background:#192c50;border:1px solid #485f88;color:#bfd0ef;border-radius:12px;font-size:17px;font-weight:800;cursor:pointer}
+#challengeSetup .player-choices button[aria-pressed="true"],.player-choices button[aria-pressed="true"]{background:linear-gradient(135deg,#435bba,#238aa9);border-color:#72deff;color:white;box-shadow:0 0 0 2px #42d9ff18}
+#challengeDescription{font-size:14px;color:#c6d5eb;margin:0 0 20px}
+#challengeForm button:disabled{cursor:default;opacity:.45;transform:none;filter:none}
+#rankingStatus{margin:12px 0}
 </style>
 </head>
 <body>
 <dialog id="rankingDialog" aria-labelledby="rankingTitle">
   <header class="ranking-header"><div><p>한자 퀴즈 · 도전모드</p><h2 id="rankingTitle"></h2></div><button id="closeRanking" type="button" aria-label="순위표 닫기">✕</button></header>
-  <div id="rankingStatus" role="status"></div>
+  <div id="rankingPlayers" class="player-choices" role="group" aria-label="도전 인원"><button type="button" data-players="1" aria-pressed="true">1인</button><button type="button" data-players="2" aria-pressed="false">2인</button><button type="button" data-players="3" aria-pressed="false">3인</button><button type="button" data-players="4" aria-pressed="false">4인</button></div><div id="rankingStatus" role="status"></div>
   <div class="ranking-columns"><span>순위</span><span>닉네임</span><span>정답</span><span>시간</span></div>
   <div id="rankingTop"></div>
   <footer class="ranking-mine"><h3>내 기록</h3><div id="rankingMine"></div></footer>
@@ -429,15 +435,15 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
 
       <div id="modePicker" class="mode-picker">
         <button type="button" data-screen="practice">일반모드</button>
-        <button type="button" data-screen="challenge">도전모드(1인)</button>
+        <button type="button" data-screen="challenge">도전모드</button>
       </div>
       <button id="backToModes" class="hidden" type="button">← 모드 선택</button>
       <section id="challengeSetup" class="challenge-box hidden">
-        <h2>도전모드<span>1인</span></h2>
+        <h2>도전모드</h2><div id="challengePlayers" class="player-choices" role="group" aria-label="도전 인원"><button type="button" data-players="1" aria-pressed="true">1인</button><button type="button" data-players="2" aria-pressed="false">2인</button><button type="button" data-players="3" aria-pressed="false">3인</button><button type="button" data-players="4" aria-pressed="false">4인</button></div><p id="challengeDescription">혼자 도전하고 나의 최고 기록을 세워요.</p>
         <div class="challenge-meta"><span>전체 범위</span><span>30문제</span><span>월별 랭킹</span></div>
         <p class="challenge-rule">정답 수가 같으면, 더 빠른 기록이 앞서요.</p>
         <form id="challengeForm">
-          <label>숫자 4자리 닉네임 <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
+          <label><span id="nicknameLabel">숫자 4자리 닉네임</span> <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
           <button type="submit">도전 시작</button>
         </form>
         <button id="viewBoard" type="button">순위표 보기</button>
@@ -742,9 +748,21 @@ function chooseType(){
   return settings.mode;
 }
 
+let challengePlayers=1;
+document.getElementById("challengePlayers").onclick=event=>{
+  const button=event.target.closest("button[data-players]");
+  if(!button)return;
+  challengePlayers=Number(button.dataset.players);
+  document.querySelectorAll("#challengePlayers button").forEach(item=>item.setAttribute("aria-pressed",item===button));
+  document.getElementById("nicknameLabel").textContent=challengePlayers===1?"숫자 4자리 닉네임":"숫자 4자리 팀 닉네임";
+  document.getElementById("challengeDescription").textContent=challengePlayers===1?"혼자 도전하고 나의 최고 기록을 세워요.":challengePlayers+"명이 각자 풀고, 점수를 합쳐 도전해요.";
+  const start=document.querySelector("#challengeForm button");
+  start.disabled=challengePlayers!==1;
+  start.textContent=challengePlayers===1?"도전 시작":challengePlayers+"인 도전 준비 중";
+};
 document.getElementById("challengeForm").onsubmit=event=>{
   event.preventDefault();
-  startGame(document.getElementById("nickname").value);
+  if(challengePlayers===1)startGame(document.getElementById("nickname").value);
 };
 function challengeQuestions(grouped){
   const chosen=new Set();
@@ -1117,7 +1135,13 @@ function rankingRow(record){
   return row;
 }
 let rankingRequest=0;
-document.getElementById("viewBoard").onclick=async()=>{
+document.getElementById("viewBoard").onclick=()=>openRanking(challengePlayers);
+document.getElementById("rankingPlayers").onclick=event=>{
+  const button=event.target.closest("button[data-players]");
+  if(button)openRanking(Number(button.dataset.players));
+};
+async function openRanking(players){
+  document.querySelectorAll("#rankingPlayers button").forEach(button=>button.setAttribute("aria-pressed",Number(button.dataset.players)===players));
   const request=++rankingRequest;
   const input=document.getElementById("nickname").value;
   const nickname=/^[0-9]{4}$/.test(input)?input:null;
@@ -1128,7 +1152,13 @@ document.getElementById("viewBoard").onclick=async()=>{
   top.replaceChildren();
   mine.textContent="";
   status.textContent="순위를 불러오는 중…";
-  rankingDialog.showModal();
+  if(!rankingDialog.open)rankingDialog.showModal();
+  document.querySelector(".ranking-mine h3").textContent=players===1?"내 기록":"우리 팀 기록";
+  if(players!==1){
+    status.textContent=players+"인 순위는 다인 도전이 열리면 제공돼요.";
+    mine.textContent="다인 도전 준비 중";
+    return;
+  }
   try{
     const rows=await rpc("hanja_board",{p_nickname:nickname});
     if(request!==rankingRequest)return;
