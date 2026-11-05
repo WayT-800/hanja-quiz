@@ -416,7 +416,7 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
 <dialog id="rankingDialog" aria-labelledby="rankingTitle">
   <header class="ranking-header"><div><p>한자 퀴즈 · 도전모드</p><h2 id="rankingTitle"></h2></div><button id="closeRanking" type="button" aria-label="순위표 닫기">✕</button></header>
   <div id="rankingPlayers" class="player-choices" role="group" aria-label="도전 인원"><button type="button" data-players="1" aria-pressed="true">1인</button><button type="button" data-players="2" aria-pressed="false">2인</button><button type="button" data-players="3" aria-pressed="false">3인</button><button type="button" data-players="4" aria-pressed="false">4인</button></div><div id="rankingStatus" role="status"></div>
-  <div class="ranking-columns"><span>순위</span><span>닉네임</span><span>정답</span><span>시간</span></div>
+  <div class="ranking-columns"><span>순위</span><span>닉네임</span><span>총점</span><span>시간</span></div>
   <div id="rankingTop"></div>
   <footer class="ranking-mine"><h3>내 기록</h3><div id="rankingMine"></div></footer>
 </dialog>
@@ -440,7 +440,7 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
       <button id="backToModes" class="hidden" type="button">← 모드 선택</button>
       <section id="challengeSetup" class="challenge-box hidden">
         <h2>도전모드</h2><div id="challengePlayers" class="player-choices" role="group" aria-label="도전 인원"><button type="button" data-players="1" aria-pressed="true">1인</button><button type="button" data-players="2" aria-pressed="false">2인</button><button type="button" data-players="3" aria-pressed="false">3인</button><button type="button" data-players="4" aria-pressed="false">4인</button></div><p id="challengeDescription">혼자 도전하고 나의 최고 기록을 세워요.</p>
-        <div class="challenge-meta"><span>전체 범위</span><span>30문제</span><span>월별 랭킹</span></div>
+        <div class="challenge-meta"><span>전체 범위</span><span>각자 30문제</span><span>10초</span></div>
         <p class="challenge-rule">정답 수가 같으면, 더 빠른 기록이 앞서요.</p>
         <form id="challengeForm">
           <label><span id="nicknameLabel">닉네임(숫자 4자리)</span> <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
@@ -757,12 +757,12 @@ document.getElementById("challengePlayers").onclick=event=>{
   document.getElementById("nicknameLabel").textContent=challengePlayers===1?"닉네임(숫자 4자리)":"팀 닉네임(숫자 4자리)";
   document.getElementById("challengeDescription").textContent=challengePlayers===1?"혼자 도전하고 나의 최고 기록을 세워요.":challengePlayers+"명이 각자 풀고, 점수를 합쳐 도전해요.";
   const start=document.querySelector("#challengeForm button");
-  start.disabled=challengePlayers!==1;
-  start.textContent=challengePlayers===1?"도전 시작":challengePlayers+"인 도전 준비 중";
+  start.disabled=false;
+  start.textContent=challengePlayers+"인 도전 시작";
 };
 document.getElementById("challengeForm").onsubmit=event=>{
   event.preventDefault();
-  if(challengePlayers===1)startGame(document.getElementById("nickname").value);
+  startGame(document.getElementById("nickname").value);
 };
 function challengeQuestions(grouped){
   const chosen=new Set();
@@ -775,7 +775,7 @@ function challengeQuestions(grouped){
 }
 async function startGame(nickname=""){
   if(starting || (nickname && !/^[0-9]{4}$/.test(nickname)))return;
-  settings=nickname ? {...normalSettings,players:1,mode:"mixed",time:0,count:30,selectedParts:new Set([1,2,3,4,5])} : normalSettings;
+  settings=nickname ? {...normalSettings,players:challengePlayers,mode:"mixed",time:10,count:30,selectedParts:new Set([1,2,3,4,5])} : normalSettings;
   stopTimer();clearConfetti();errorText.textContent="";
   if(settings.selectedParts.size===0){
     intro.classList.remove("hidden");game.classList.add("hidden");result.classList.add("hidden");
@@ -800,6 +800,11 @@ async function startGame(nickname=""){
     type:null,revealed:false,startedAt:0
   };
 
+  state.players=settings.players;
+  if(nickname){
+    const offsets=shuffle(Array.from({length:30},(_,i)=>i)).slice(0,settings.players);
+    state.playerQuestions=offsets.map(offset=>state.questions.map((_,round)=>state.questions[(round+offset)%30]));
+  }
   intro.classList.add("hidden");result.classList.add("hidden");game.classList.remove("hidden");
   singleLayout.classList.toggle("hidden",settings.players!==1);
   multiLayout.classList.toggle("hidden",settings.players===1);
@@ -888,6 +893,8 @@ function renderMulti(item,commonOptions){
   multiPlayers.innerHTML="";
 
   for(let p=0;p<settings.players;p++){
+    const playerItem=state.nickname?state.playerQuestions[p][state.index]:item;
+    const playerOptions=state.nickname?buildOptions(playerItem,state.type):commonOptions;
     const player=document.createElement("section");
     player.className="player";player.dataset.player=p;
 
@@ -898,13 +905,13 @@ function renderMulti(item,commonOptions){
     const qw=document.createElement("div");qw.className="player-question-wrap";
     const q=document.createElement("div");
     q.className="player-question "+(state.type==="reading"?"hanja":"reading");
-    q.textContent=state.type==="reading"?item.hanja:item.readings.join(" · ");
+    q.textContent=state.type==="reading"?playerItem.hanja:playerItem.readings.join(" · ");
     qw.appendChild(q);
 
     const aw=document.createElement("div");aw.className="player-answer-wrap";
     const answers=document.createElement("div");answers.className="multi-answers";
 
-    for(const option of shuffle(commonOptions)){
+    for(const option of shuffle(playerOptions)){
       const btn=document.createElement("button");
       btn.type="button";
       btn.className="multi-answer"+(state.type==="hanja"?" hanja-choice":"");
@@ -933,7 +940,8 @@ function bindPointer(el,fn){
 
 function singleSelect(btn,option){
   if(state.revealed)return;
-  if(state.nickname)state.elapsed+=performance.now()-state.startedAt;
+  if(state.nickname && performance.now()-state.startedAt>=10000){timeoutQuestion();return;}
+  if(state.nickname)state.elapsed+=Math.min(10000,performance.now()-state.startedAt);
   state.revealed=true;stopTimer();singleAnswers.classList.add("locked");Sound.click();
 
   [...singleAnswers.querySelectorAll(".single-answer")].forEach(b=>{
@@ -953,6 +961,7 @@ function singleSelect(btn,option){
 
 function multiSelect(p,btn,option){
   if(state.revealed||state.answers[p]!==null)return;
+  if(state.nickname && performance.now()-state.startedAt>=10000){timeoutQuestion();return;}
   state.answers[p]={btn,correct:option.correct};
   const player=multiPlayers.querySelector(`.player[data-player="${p}"]`);
   player.classList.add("locked");freezePlayerBar(p);Sound.click();
@@ -975,6 +984,7 @@ function showSingleFeedback(text,kind){
 function timeoutQuestion(){
   if(state.revealed)return;
   if(settings.players===1){
+    if(state.nickname)state.elapsed+=10000;
     state.revealed=true;stopTimer();singleAnswers.classList.add("locked");
     [...singleAnswers.querySelectorAll(".single-answer")].forEach(b=>{
       if(b.dataset.correct==="1")b.classList.add("correct-answer");
@@ -985,6 +995,7 @@ function timeoutQuestion(){
 
 function revealMulti(){
   if(state.revealed)return;
+  if(state.nickname)state.elapsed+=Math.min(10000,performance.now()-state.startedAt);
   state.revealed=true;stopTimer();Sound.reveal();
 
   for(let p=0;p<settings.players;p++){
@@ -1055,14 +1066,15 @@ function showResult(){
   Sound.fanfare();spawnConfetti(85);
 
   document.getElementById("challengeResult").hidden=!state.nickname;
-  const one=settings.players===1;
+  const one=settings.players===1 || Boolean(state.nickname);
   document.getElementById("singleResult").classList.toggle("hidden",!one);
   document.getElementById("multiResult").classList.toggle("hidden",one);
 
   if(one){
-    const total=state.questions.length;
-    const pct=Math.round((state.correct[0]/total)*100);
-    document.getElementById("finalScore").textContent=`${state.scores[0]}점`;
+    const total=state.questions.length*(state.nickname?state.players:1);
+    const correct=state.correct.reduce((sum,value)=>sum+value,0);
+    const pct=Math.round((correct/total)*100);
+    document.getElementById("finalScore").textContent=`${state.scores.reduce((sum,value)=>sum+value,0)}점`;
     document.getElementById("finalDetail").textContent=`${state.correct[0]} / ${total} 정답 · 정답률 ${pct}%`;
     let grade="조금 더 연습!";
     if(pct>=90)grade="한자 마스터!";
@@ -1071,7 +1083,7 @@ function showResult(){
     document.getElementById("grade").textContent=grade;
     if(state.nickname){
       state.tenths=Math.max(1,Math.round(state.elapsed/100));
-      document.getElementById("finalDetail").textContent=state.nickname+" · "+state.correct[0]+"/30 정답 · "+(state.tenths/10).toFixed(1)+"초";
+      document.getElementById("finalDetail").textContent=state.nickname+" · "+state.players+"인 · "+correct+"/"+total+" 정답 · "+(state.tenths/10).toFixed(1)+"초";
       resultRanking(state);
     }
   }else renderPodium();
@@ -1105,7 +1117,7 @@ document.addEventListener("visibilitychange",updateMonth);
 function displayBoard(el,rows,nick){
   el.className="rank-list";
   el.textContent=rows.length ? [monthTitle(),...rows.map(r=>
-    r.place+"위 · "+r.nickname+(r.nickname===nick?" (내 기록)":"")+" · "+r.correct+"/30 · "+(r.tenths/10).toFixed(1)+"초"
+    r.place+"위 · "+r.nickname+(r.nickname===nick?" (내 기록)":"")+" · "+(r.correct*100)+"점 · "+(r.tenths/10).toFixed(1)+"초"
   )].join("\n") : monthTitle()+" · 아직 등록된 기록이 없어요.";
 }
 async function resultRanking(run){
@@ -1113,8 +1125,8 @@ async function resultRanking(run){
   retryRank.hidden=true;
   el.textContent="랭킹 연결 중…";
   try{
-    await rpc("hanja_submit",{p_nickname:run.nickname,p_correct:run.correct[0],p_tenths:run.tenths});
-    const rows=await rpc("hanja_board",{p_nickname:run.nickname});
+    await rpc("hanja_team_submit",{p_players:run.players,p_nickname:run.nickname,p_correct:run.correct.reduce((sum,value)=>sum+value,0),p_tenths:run.tenths});
+    const rows=await rpc("hanja_team_board",{p_players:run.players,p_nickname:run.nickname});
     if(state===run)displayBoard(el,rows,run.nickname);
   }catch(error){
     if(state===run){el.textContent=error.message;retryRank.hidden=false}
@@ -1127,7 +1139,7 @@ function rankingRow(record){
   const row=document.createElement("div");
   row.className="ranking-row";
   row.dataset.place=record.place;
-  for(const text of [record.place+"위",record.nickname,record.correct+"/30",(record.tenths/10).toFixed(1)+"초"]){
+  for(const text of [record.place+"위",record.nickname,(record.correct*100)+"점",(record.tenths/10).toFixed(1)+"초"]){
     const cell=document.createElement("span");
     cell.textContent=text;
     row.appendChild(cell);
@@ -1154,13 +1166,8 @@ async function openRanking(players){
   status.textContent="순위를 불러오는 중…";
   if(!rankingDialog.open)rankingDialog.showModal();
   document.querySelector(".ranking-mine h3").textContent=players===1?"내 기록":"우리 팀 기록";
-  if(players!==1){
-    status.textContent=players+"인 순위는 다인 도전이 열리면 제공돼요.";
-    mine.textContent="다인 도전 준비 중";
-    return;
-  }
   try{
-    const rows=await rpc("hanja_board",{p_nickname:nickname});
+    const rows=await rpc("hanja_team_board",{p_players:players,p_nickname:nickname});
     if(request!==rankingRequest)return;
     status.textContent=rows.length?"":"이번 달 첫 기록에 도전해 보세요.";
     rows.filter(row=>Number(row.place)<=10).slice(0,10).forEach(row=>top.appendChild(rankingRow(row)));
