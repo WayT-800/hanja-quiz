@@ -440,7 +440,7 @@ button,input{font:inherit} button{-webkit-tap-highlight-color:transparent}
       <button id="backToModes" class="hidden" type="button">← 모드 선택</button>
       <section id="challengeSetup" class="challenge-box hidden">
         <h2>도전모드</h2><div id="challengePlayers" class="player-choices" role="group" aria-label="도전 인원"><button type="button" data-players="1" aria-pressed="true">1인</button><button type="button" data-players="2" aria-pressed="false">2인</button><button type="button" data-players="3" aria-pressed="false">3인</button><button type="button" data-players="4" aria-pressed="false">4인</button></div><p id="challengeDescription">혼자 도전하고 나의 최고 기록을 세워요.</p>
-        <div class="challenge-meta"><span>전체 범위</span><span>각자 30문제</span><span>10초</span></div>
+        <div class="challenge-meta"><span>1~4부</span><span>각자 30문제</span><span>10초</span></div>
         <p class="challenge-rule">정답 수가 같으면, 더 빠른 기록이 앞서요.</p>
         <form id="challengeForm">
           <label><span id="nicknameLabel">닉네임(숫자 4자리)</span> <input id="nickname" type="text" inputmode="numeric" pattern="[0-9]{4}" minlength="4" maxlength="4" required placeholder="0073"></label>
@@ -766,16 +766,18 @@ document.getElementById("challengeForm").onsubmit=event=>{
 };
 function challengeQuestions(grouped){
   const chosen=new Set();
-  for(const rows of Object.values(PARTS)){
+  const parts=shuffle([1,2,3,4]);
+  for(const [index,part] of parts.entries()){
+    const rows=PARTS[part];
     const symbols=new Set(rows.map(row=>row[0]));
     const candidates=grouped.filter(item=>symbols.has(item.hanja)&&!chosen.has(item));
-    shuffle(candidates).slice(0,6).forEach(item=>chosen.add(item));
+    shuffle(candidates).slice(0,index<2?8:7).forEach(item=>chosen.add(item));
   }
   return shuffle([...chosen]);
 }
 async function startGame(nickname=""){
   if(starting || (nickname && !/^[0-9]{4}$/.test(nickname)))return;
-  settings=nickname ? {...normalSettings,players:challengePlayers,mode:"mixed",time:10,count:30,selectedParts:new Set([1,2,3,4,5])} : normalSettings;
+  settings=nickname ? {...normalSettings,players:challengePlayers,mode:"mixed",time:10,count:30,selectedParts:new Set([1,2,3,4])} : normalSettings;
   stopTimer();clearConfetti();errorText.textContent="";
   if(settings.selectedParts.size===0){
     intro.classList.remove("hidden");game.classList.add("hidden");result.classList.add("hidden");
